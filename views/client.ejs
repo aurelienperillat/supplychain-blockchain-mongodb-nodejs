@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/client.css" rel="stylesheet">
+  </head>
+  <body>
+        <div class="row main-row">
+            <div class="col-sm-2 main-left-col">
+            <nav class="nav-sidebar">
+                <ul class="nav">
+                    <li id="profile_label">CLIENT</li>
+                    <li id="disconnect"><a href=<%= url %>/logout class="menu-link">Deconnexion</a></li>
+                    <li><a href="#" class="menu-link top-list">Mes commandes</a></li>
+                    <li><a href=<%= url %>/catalogue class="menu-link">Catalogue des produits</a></li>
+                    <li id="archive"><a href="" class="menu-link">commandes archivées</a></li>
+                </ul>
+            </nav>
+            </div>
+            <div class="col-sm-10 main-right-col">
+                <div class="row top-right-row">
+                    <span class="span-center"><%= user.company %> - Mes Commandes</span>  
+                </div>
+                <div class="row main-right-row" id="scroll-container">
+                    <div class="col-sm-3 left-orders">
+                        <p class="title">Commandes en attente de validation</p>
+                        <ul id="left-list"></ul>
+                    </div>
+                    <div class="col-sm-3 middle-orders">
+                        <p class="title">Commandes en cours de préparation</p>
+                        <ul id="middle-list"></ul>
+                    </div>
+                    <div class="col-sm-3 deliver-orders">
+                        <p class="title">Commandes en cours de livraison</p>
+                        <ul id="deliver-list"></ul>
+                    </div>
+                    <div class="col-sm-3 right-orders">
+                        <p class="title">Commandes livrées</p>
+                        <ul id="right-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content" id="myModalContent">
+                    <div class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="../../bootstrap/js/bootstrap.min.js"></script>
+        <script src="../../build/bundles/clientBundle.js"></script>
+    </body>
+</html>

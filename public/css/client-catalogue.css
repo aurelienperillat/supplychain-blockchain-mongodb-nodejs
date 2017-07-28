@@ -1,0 +1,114 @@
+html, body, .container, .main-row, .main-left-col, .main-right-col {
+    height: 100%;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.title {
+    text-align: center;
+    color: #1A2930;
+    height: 40px;
+    padding-top: 5px;
+}
+
+.main-left-col {
+    border: 1px solid #0A1612;
+    background-color: #1A2930;
+    color: black;
+}
+
+.nav-sidebar {
+    left: 0px;
+    right: 0px;
+    position: absolute;
+}
+
+.menu-link {
+    color: white;
+    border-bottom: 1px solid #0A1612;
+}
+
+.top-list {
+    border-top: 1px solid #0A1612;
+}
+
+.top-right-row {
+    background-color: #F7CE3E;
+    height: 15%;
+    border-top: 1px solid #0A1612;
+    border-right: 1px solid #0A1612;
+    font-size: 150%;
+    color: white;
+    padding-left: 8%;
+    padding-top: 2.5%;
+}
+
+.main-right-row {
+    background: #D9D9D9;
+    height: 85%;
+    border-top: 1px solid #0A1612;
+    border-right: 1px solid #0A1612;
+    overflow: auto;
+}
+
+.container-card {
+    padding: 10px;
+}
+
+.card {
+    background-color: #1A2930;
+    border: 1px solid #0A1612;
+    border-radius: 10px;
+    height: 150px;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+#panier {
+    display: inline;
+    border: 1px solid #F7CE3E;
+    background: #F7CE3E;
+    color: white;
+    cursor: pointer;
+}
+
+#panier:hover {
+    display: inline;
+    border: 1px solid #F7CE3E;
+    background: #F7CE3E;
+    color: black;
+    cursor: pointer; 
+}
+
+.custom-modal {
+    top : 20%;
+    left : 20%;
+}
+
+.custom-modal-content {
+    background-color: #F7CE3E;
+    color: white;
+    padding: 5px;
+}
+
+#profile_label {
+    height: 250px;
+    padding-top: 110px;
+    text-align: center;
+    border-bottom: 1px solid #0A1612;
+    background: url(../fonts/back_profile.png) no-repeat;
+    background-size: cover;
+    background-position-x: 50%;
+    font-style: italic;
+    font-size: 150%;
+}
+
+#disconnect {
+    margin-bottom: 20px;
+}

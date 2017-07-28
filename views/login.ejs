@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/login.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+        <form class="form-horizontal">
+          <div class="form-group">  
+                <div class="col-sm-4 col-sm-offset-4" id="topDiv">
+                    <select id="selectType1" class="form-control">
+                        <option value="2" selected="selected">Client</option>
+                        <option value="3">Transporteur</option>
+                        <option value="1">Admin</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="form-group">  
+                <div class="col-sm-4 col-sm-offset-4">
+                    <input id="adresse" type="text" placeholder="adresse blockchain" class="form-control input-md">  
+                </div>
+            </div>
+            <div class="form-group">  
+                <div class="col-sm-4 col-sm-offset-4">
+                    <input id="password1" type="text" placeholder="mot de passe" class="form-control input-md">  
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-4">
+                    <div class="row">
+                        <button id="login" class="btn btn-primary col-sm-4 col-sm-offset-4">Connexion</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-4">
+                    <div class="row">
+                        <a href=<%= url %>/signin class="col-sm-4 col-sm-offset-4" id="signin1">Inscription</a>
+                    </div>
+                </div>
+            </div>  
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="../build/bundles/loginBundle.js"></script>
+  </body>
+</html>

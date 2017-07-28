@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/fournisseur-catalogue.css" rel="stylesheet">
+  </head>
+  <body>
+        <div class="row main-row">
+            <div class="col-sm-2 main-left-col">
+                <nav class="nav-sidebar">
+                    <ul class="nav">
+                        <li id="profile_label">ADMIN</li>
+                        <li id="disconnect"><a href=<%= url %>/logout class="menu-link">Deconnexion</a></li>
+                        <li>
+                            <a href="#menu-vente" class="menu-link top-list" data-toggle="collapse">Vente
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </a>
+                        </li>
+                            <ul class="collapse nav" id="menu-vente">
+                                <li><a href=<%= url %>/adminCatalogue class="menu-link">Gestion stock/catalogue</a></li>
+                                <li><a href=<%= url %>/home/1 class="menu-link">Gestion commandes client</a></li>
+                                <li><a href="#" class="menu-link">commandes client archivées</a></li>
+                            </ul>
+                        <li>
+                            <a href="#menu-achat" class="menu-link" data-toggle="collapse">Achat
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </a>
+                        </li>
+                            <ul class="collapse nav" id="menu-achat">
+                                <li><a href="#" class="menu-link">Catalogue fournisseur</a></li>
+                                <li><a href="#" class="menu-link">Gestion commandes fournisseur</a></li>
+                                <li><a href="#" class="menu-link">Commandes fournisseur archivées</a></li>
+                            </ul>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="col-sm-10 main-right-col">
+                <div class="row top-right-row">
+                    <span class="span-center col-sm-10"><%= user.company %> - Catalogue fournisseur</span> 
+                </div>
+                <div class="row main-right-row" id="scroll-container">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content" id="myModalContent">
+                    <div class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="../../bootstrap/js/bootstrap.min.js"></script>
+        <script src="../../build/bundles/fournisseurCatalogueBundle.js"></script>
+    </body>
+</html>
