@@ -4,6 +4,8 @@ vendor
 .profile.d
 logs
 runtime.pid
+Procfile
+
 
 
 
