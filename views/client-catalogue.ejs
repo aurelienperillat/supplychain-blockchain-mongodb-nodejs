@@ -8,22 +8,21 @@
     <link href="../../css/client-catalogue.css" rel="stylesheet">
   </head>
   <body>
-      <div class="container">
           <div class="row main-row">
-              <div class="col-sm-3 main-left-col">
+              <div class="col-sm-2 main-left-col">
                 <nav class="nav-sidebar">
                     <ul class="nav">
                         <li id="profile_label">CLIENT</li>
                         <li id="disconnect"><a href=<%= url %>/logout class="menu-link">Deconnexion</a></li>
-                        <li><a href=<%= url %>/home/2 class="menu-link top-list">Mes commandes</a></li>
-                        <li><a href="#" class="menu-link">Catalogue des produits</a></li>
-                        <li id="archive"><a href="" class="menu-link">commandes archivées</a></li>
+                        <li><a href="#" class="menu-link top-list">Catalogue des produits</a></li>
+                        <li><a href=<%= url %>/myCommand class="menu-link">Mes commandes</a></li>
+                        <li id="archive"><a href="#" class="menu-link inactiveLink">commandes archivées</a></li>
                     </ul>
                 </nav>
               </div>
-              <div class="col-sm-9 main-right-col">
+              <div class="col-sm-10 main-right-col">
                   <div class="row top-right-row">
-                      <span class="span-center col-sm-10"><%= user.company %> - Catalogue produits</span>
+                      <span class="span-center col-sm-10">Catalogue produit</span>
                       <div class="col-sm-1" id="panier">
                           <span class="glyphicon glyphicon-shopping-cart">Panier</span>
                       </div>  
@@ -45,7 +44,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="../../bootstrap/js/bootstrap.min.js"></script>
         <script src="../../build/bundles/clientCatalogueBundle.js"></script>

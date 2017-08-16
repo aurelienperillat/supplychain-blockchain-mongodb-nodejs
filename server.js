@@ -28,6 +28,7 @@ const assert = require('assert');
 var signinRouter = require("./routes/signinRoutes.js");
 var adminRouter = require("./routes/adminRoutes.js");
 var clientRouter = require("./routes/clientRoutes.js");
+var transporteurRouter = require("./routes/transporteurRoutes.js");
 
 // We want to extract the port to publish our app on
 var port = process.env.PORT || 8080;
@@ -69,6 +70,7 @@ app.use(express.static('public'));
 app.use(signinRouter);
 app.use(adminRouter);
 app.use(clientRouter);
+app.use(transporteurRouter);
 
 // Then we'll pull in the database client library
 /*var MongoClient = require("mongodb").MongoClient;

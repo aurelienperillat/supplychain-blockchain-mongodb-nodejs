@@ -151,9 +151,11 @@ router.get("/home/:type", function(req, res){
     var typeVal = req.params.type;
 
     if(typeVal == "1")
-        res.render('admin.ejs', {user : req.session.user, url : URL.url});
+        res.render('admin-catalogue.ejs', {user : req.session.user, url : URL.url});
     if(typeVal == "2")
-        res.render('client.ejs', {user : req.session.user, url : URL.url});
+        res.render('client-catalogue.ejs', {user : req.session.user, url : URL.url});
+    if(typeVal == "3")
+        res.render('transporteur.ejs', {user : req.session.user, url : URL.url});
 });
 
 module.exports = router;

@@ -10332,10 +10332,7 @@ return jQuery;
 /***/ 1:
 /***/ (function(module, exports) {
 
-module.exports = {
-	"url": "https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net",
-	"inactiveurl": "http://localhost:8080"
-};
+module.exports = {"url":"https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net","inactiveurl":"http://localhost:8080"}
 
 /***/ }),
 

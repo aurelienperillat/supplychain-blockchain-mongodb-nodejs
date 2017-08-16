@@ -9,6 +9,7 @@ window.addEventListener('load', function() {
     loadProducts(function(){
         $(".card").click(modal);
     });
+    getUser();
 });
 
 loadProducts = function(callback){
@@ -29,8 +30,7 @@ loadProducts = function(callback){
                             "<div class='card' name="+i+">"+
                                 "<p>Descriptif : "+products[i].descriptif+"</p>"+
                                 "<p>Réference : "+products[i].ref+"</p>"+
-                                "<p>Prix : "+products[i].price+" €</p>"+
-                                "<p>Stock : "+products[i].quantity+"</p>"+
+                                "<p>Prix unitaire : "+products[i].price+" €</p>"+
                             "</div>"+
                         "</div>"
                     );
@@ -54,8 +54,10 @@ modal = function(){
     
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
+        "<h2>Ajouter cet article au panier<h2>"+
         "<form class='form-horizontal' onsubmit='return false;'>"+
             "<div class='form-group'>"+
+                "<label class='control-label' for='quantity'>Quantité souhaitée</label>"+
                 "<input id='quantity' type='text' placeholder='Quantité' class='form-control input-md'>"+  
             "</div>"+
              "<div class='form-group'>"+
@@ -73,7 +75,7 @@ modal = function(){
             alert("Quantité en stock insuffisante pour satisfaire votre demande");
         else {
             var price = quantity * product.price;
-            $("#total-price").text("Prix total : "+price+" €");
+            $("#total-price").text("Montant total : "+price+" €");
             
         }
     });
@@ -113,6 +115,8 @@ modalPanier = function(){
             else{
                 $(".modal-body-panier").html(
                     "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
+                    "<p>client : "+user.name+" "+user.lastname+"</p>"+
+                    "<p>adresse : "+user.deliveryaddress+"</p>"+
                     "<table class='table'>"+
                         "<thead>"+
                             "<tr>"+
@@ -120,13 +124,14 @@ modalPanier = function(){
                                 "<th>Reférence produit</th>"+
                                 "<th>Quantité</th>"+
                                 "<th>Prix unitaire</th>"+
+                                "<th>Montant total</th>"+
                             "</tr>"+
                         "</thead>"+
                         "<tbody id='modal-table'></tbody>"+
                     "</table>"+
                     "<p>Total : "+data.panierPrice+" €</p></br>"+
                     "<div class='row'>"+    
-                        "<button type='button' class='btn btn-success col-sm-offset-5 col-sm-2' id='valid'>Valider panier</button>"+
+                        "<button type='button' class='btn btn-success col-sm-offset-5 col-sm-2' id='valid'>Valider commande</button>"+
                     "</div>"
                 );
 
@@ -137,6 +142,7 @@ modalPanier = function(){
                             "<td>"+data.panier[i].product.ref+"</td>"+
                             "<td>"+data.panier[i].quantity+"</td>"+
                             "<td>"+data.panier[i].product.price+" €</td>"+
+                            "<td>"+(data.panier[i].product.price*data.panier[i].quantity)+" €</td>"+
                         "</tr>"
                     );
                 }
@@ -155,6 +161,15 @@ validPanier = function() {
     $.post(URL.url+"/panier", {}, function(data, status){
         if(status == "success"){
             if(data == true) alert("Commande validée");
+            else alert("Erreur lors de la validation de la commande");
+        }
+    });
+}
+
+getUser = function() {
+    $.get(URL.url+"/getUser", function(data, status){
+        if(status == "success"){
+            if(data != null) user = data;
             else alert("Erreur lors de la validation de la commande");
         }
     });

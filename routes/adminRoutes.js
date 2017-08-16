@@ -63,12 +63,16 @@ router.get("/command", function(req, res){
     });
 });
 
-router.get("/adminCatalogue", function(req, res){
-    res.render("admin-catalogue.ejs", {user : req.session.user, url : URL.url});
+router.get("/adminCommand", function(req, res){
+    res.render("admin.ejs", {user : req.session.user, url : URL.url});
 });
 
 router.get("/fournisseurCatalogue", function(req, res){
     res.render("fournisseur-catalogue.ejs", {user : req.session.user, url : URL.url});
+});
+
+router.get("/fournisseurCommand", function(req, res){
+    res.render("fournisseur-command.ejs", {user : req.session.user, url : URL.url});
 });
 
 router.get("/product", function(req, res){
@@ -203,6 +207,82 @@ router.post("/addRule", function(req, res){
     });
 });
 
+router.post("/denyOrder", function(req, res){
+    mongoClient.connect(credentials.uri, {
+        mongos: {
+            ssl: true,
+            sslValidate: true,
+            sslCA: ca,
+            poolSize: 1,
+            reconnectTries: 1
+        }
+    }, function(err, db){
+        if(err == null){
+            mongodb = db.db("supply-chain");
+            mongodb.collection("command").updateOne(
+            {
+                _id : new ObjectId(req.body.id)
+            }, 
+            {$set : {
+                statut : -1
+            }},
+            function(err, result){
+                if(err) {
+                    res.send(false);
+                    console.log(err);
+                }
+                else {
+                    res.send(true)
+                    mongodb.close();
+                    db.close();
+                }
+            });
+        }
+        else {
+            res.send(false);
+            console.log(err);
+        }
+    });
+});
+
+router.post("/archivOrder", function(req, res){
+    mongoClient.connect(credentials.uri, {
+        mongos: {
+            ssl: true,
+            sslValidate: true,
+            sslCA: ca,
+            poolSize: 1,
+            reconnectTries: 1
+        }
+    }, function(err, db){
+        if(err == null){
+            mongodb = db.db("supply-chain");
+            mongodb.collection("command").updateOne(
+            {
+                _id : new ObjectId(req.body.id)
+            }, 
+            {$set : {
+                statut : 5
+            }},
+            function(err, result){
+                if(err) {
+                    res.send(false);
+                    console.log(err);
+                }
+                else {
+                    res.send(true)
+                    mongodb.close();
+                    db.close();
+                }
+            });
+        }
+        else {
+            res.send(false);
+            console.log(err);
+        }
+    });
+});
+
 router.get("/validOrder/:id", function(req, res){
     var i;
     var command;
@@ -229,7 +309,7 @@ router.get("/validOrder/:id", function(req, res){
                 else {
                     command = docs[0];
                     for(i=0; i<command.products.refs.length; i++){
-                        findProductAndDecrease(req, res, db, mongodb, command, i);
+                        findProductAndDecrease(req, res, db, mongodb, command, i, command.products.refs.length);
                     }
                 }
             });
@@ -241,7 +321,7 @@ router.get("/validOrder/:id", function(req, res){
     });
 });
 
-findProductAndDecrease = function(req, res, db, mongodb, command, i) {
+findProductAndDecrease = function(req, res, db, mongodb, command, i, length) {
     mongodb.collection("product").find({
         ref : command.products.refs[i]
     }).toArray(function(err, docs){
@@ -286,9 +366,11 @@ findProductAndDecrease = function(req, res, db, mongodb, command, i) {
                                 console.log(err);
                             }
                             else {
-                                res.send(true)
-                                mongodb.close();
-                                db.close();
+                                if(i == length -1){
+                                    res.send(true)
+                                    mongodb.close();
+                                    db.close();
+                                }
                             }
                         });
                     }
@@ -297,5 +379,65 @@ findProductAndDecrease = function(req, res, db, mongodb, command, i) {
         }                            
     });
 }
+
+router.post("/askTransport", function(req, res){
+    console.log(req.body.poids);
+    console.log(req.body.dimension);
+    console.log(req.body.id);
+    var transporteurID;
+    var collis = {poids : parseInt(req.body.poids, 10), dimension : parseInt(req.body.dimension, 10)}
+    mongoClient.connect(credentials.uri, {
+        mongos: {
+            ssl: true,
+            sslValidate: true,
+            sslCA: ca,
+            poolSize: 1,
+            reconnectTries: 1
+        }
+    }, function(err, db){
+        if(err == null){
+            mongodb = db.db("supply-chain");
+            mongodb.collection("user").find({
+                type : "3"
+            }).toArray(function(err, docs){
+                console.log(docs);
+                if(err) {
+                    res.send(false);
+                    console.log(err);
+                }
+                else if(docs.length == 0) res.send("none");
+                else {
+                    transporteurID = docs[0]._id
+                    console.log(transporteurID);
+                    mongodb.collection("command").updateOne(
+                        {
+                            _id : new ObjectId(req.body.id)
+                        }, 
+                        {$set : {
+                            transporteurID :transporteurID,
+                            collis : collis
+                        }},
+                        function(err, result){
+                            if(err) {
+                                res.send(false);
+                                console.log(err);
+                            }
+                            else {
+                                res.send(true)
+                                mongodb.close();
+                                db.close();
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            res.send(false);
+            console.log(err);
+            mongodb.close();
+            db.close();
+        }
+    });
+});
 
 module.exports = router;

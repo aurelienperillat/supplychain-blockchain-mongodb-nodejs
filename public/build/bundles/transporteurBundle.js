@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -11521,7 +11521,10 @@ module.exports = function (css) {
 /* 13 */,
 /* 14 */,
 /* 15 */,
-/* 16 */
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -11535,14 +11538,13 @@ window.addEventListener('load', function() {
     loadCommands(function(){
         $(".card-left").click(modalLeft);
         $(".card-middle").click(modalMiddle);
-        $(".card-delivery").click(modalDelivery);
         $(".card-right").click(modalRight);
         sizeBoard();
     });
 });
 
 loadCommands = function(callback){
-    $.get(URL.url+"/command-client", function(data, status){
+    $.get(URL.url+"/command-transporteur", function(data, status){
         console.log(status);
         if(status == "success"){
             if(data == false)
@@ -11555,40 +11557,26 @@ loadCommands = function(callback){
 
                 $("#left-list").empty();
                 $("#middle-list").empty();
-                $("deliver-list").empty();
                 $("#right-list").empty();
 
                 for(var i=0; i<data.length; i++){
-                     if(data[i].statut == 1){
+                    if(data[i].statut == 2){
                         $("#left-list").prepend(
                             "<li class='card card-left' name="+i+">"+
                                 "<p>Reférence : "+data[i]._id+"</p>"+
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<p>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+
-                                "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+ 
+                                "<p>Entreprise : "+data[i].clientcompany+"</p>"+ 
                             "</li>"
                         );
                     }
-                    if(data[i].statut == 2){
+                    if(data[i].statut == 3){
                         $("#middle-list").prepend(
                             "<li class='card card-middle' name="+i+">"+
                                 "<p>Reférence : "+data[i]._id+"</p>"+
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+ 
                                 "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
-                            "</li>"
-                        );
-                    }
-                    if(data[i].statut == 3){
-                        $("#deliver-list").prepend(
-                            "<li class='card card-delivery' name="+i+">"+
-                                "<p>Reférence : "+data[i]._id+"</p>"+
-                                "<p>Date : "+data[i].date+"</p>"+
-                                "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+ 
-                                "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
                                 "<p>N° Tracking : "+data[i].trackingID+"</p>"+
                             "</li>"
                         );
@@ -11599,9 +11587,8 @@ loadCommands = function(callback){
                                 "<p>Reférence : "+data[i]._id+"</p>"+
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+
-                                "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
-                                "<p>N° Tracking : "+data[i].trackingID+"</p>"+ 
+                                "<p>Entreprise : "+data[i].clientcompany+"</p>"+ 
+                                "<p>N° Tracking : "+data[i].trackingID+"</p>"+
                             "</li>"
                         );
                     }
@@ -11642,7 +11629,13 @@ modalLeft = function(){
             "</thead>"+
             "<tbody id='modal-table'></tbody>"+
         "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"
+        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<div class='form-group'>"+  
+            "<input id='tracking' type='text' placeholder='numéro de tracking' class='form-control input-md'>"+  
+        "</div>"+
+        "<div class='row'>"+    
+            "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='validTransport'>Valider transport</button>"+
+        "</div>"
     );
     
     for(var i=0; i<command.products.refs.length; i++){
@@ -11655,6 +11648,8 @@ modalLeft = function(){
             "</tr>"
         );
     }
+
+    $("#validTransport").click({index : index}, validTransport);
 
     $("#myModal").modal("show");
     return false; 
@@ -11685,7 +11680,10 @@ modalMiddle = function() {
         "</thead>"+
         "<tbody id='modal-table'></tbody>"+
         "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"
+        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<div class='row'>"+    
+            "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='validDelivery'>Valider livraison</button>"+
+        "</div>"
     );
 
     for(var i=0; i<command.products.refs.length; i++){
@@ -11698,58 +11696,11 @@ modalMiddle = function() {
             "</tr>"
         );
     }
+    
+    $("#validDelivery").click({index : index}, validDelivery);
 
     $("#myModal").modal("show");
     return false;
-}
-
-modalDelivery = function() {
-    var index = $(this).attr("name");
-    var command = commands[index];
-    console.log(index);
-    console.log(command);
-
-    $(".modal-body").html(
-        "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<p>Reférence : "+command._id+"</p>"+
-        "<p>Date : "+command.date+"</p>"+
-        "<P>Client : "+command.clientname+" "+command.clientlastname+"</P>"+
-        "<P>Adresse client : "+command.clientDeliveryAddress+"</p>"+
-        "</br>"+
-        "<p>Détail de la commande :</p>"+
-        "<table class='table'>"+
-        "<thead>"+
-            "<tr>"+
-                "<th>Descriptif produit</th>"+
-                "<th>Reférence produit</th>"+
-                "<th>Quantité</th>"+
-                "<th>Prix unitaire</th>"+
-            "</tr>"+
-        "</thead>"+
-        "<tbody id='modal-table'></tbody>"+
-        "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
-        "<p>N° Tracking : "+command.trackingID+"</p>"+
-        "<p>information collis :<p>"+
-        "<p>&nbsp;&nbsp;-poids : "+command.collis.poids+" kg</p>"+
-        "<p>&nbsp;&nbsp;-dimensions : "+command.collis.dimension+" m³</p>"
-    );
-
-    for(var i=0; i<command.products.refs.length; i++){
-        $("#modal-table").append(
-            "<tr>"+
-                "<td>"+command.products.descriptifs[i]+"</td>"+
-                "<td>"+command.products.refs[i]+"</td>"+
-                "<td>"+command.products.quantities[i]+"</td>"+
-                "<td>"+command.products.prices[i]+" €</td>"+
-            "</tr>"
-        );
-    }
-
-    //$("#archivOrder").click(archivOrder);
-    
-    $("#myModal").modal("show");
-    return false; 
 }
 
 modalRight = function() {
@@ -11778,12 +11729,14 @@ modalRight = function() {
         "<tbody id='modal-table'></tbody>"+
         "</table>"+
         "<p>Total : "+command.totalprice+" €</p></br>"+
-        "<p>N° Tracking : "+command.trackingID+"</p>"+
-        "<p>information collis :<p>"+
-        "<p>&nbsp;&nbsp;-poids : "+command.collis.poids+" kg</p>"+
-        "<p>&nbsp;&nbsp;-dimensions : "+command.collis.dimension+" m³</p></br>"+
+        "</br>"+
+        "<p>collis :</p>"+
+        "<P>&nbsp;&nbsp;&nbsp;&nbsp;poids : "+command.collis.poids+" kg</p>"+
+        "<P>&nbsp;&nbsp;&nbsp;&nbsp;dimension : "+command.collis.dimension+" m</p>"+
+        "</br>"+
+        "<p>TrackingID : " + command.TrackingID +"</p>"+
         "<div class='row'>"+    
-            "<button type='button' class='btn btn-danger col-sm-offset-4 col-sm-4' id='reclameOrder'>Réclamation</button>"+
+        "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='archivOrder'>Archiver transport</button>"+
         "</div>"
     );
 
@@ -11797,15 +11750,66 @@ modalRight = function() {
             "</tr>"
         );
     }
+
+    //$("#archivOrder").click(archivOrder);
     
     $("#myModal").modal("show");
     return false; 
 }
 
+validTransport = function(event) {
+    console.log(event.data.index);
+    $.post(URL.url+"/validTransport",{
+       id : commands[event.data.index]._id,
+       trackingID : $("#tracking").val() 
+    }, function(data, status){
+        console.log(status);
+        if(status == "success"){
+            if(data == false)
+                alert("Erreur au cours de la validation du transport");
+            else{
+                $("#myModal").modal("hide");
+                loadCommands(function(){
+                    $(".card-left").click(modalLeft);
+                    $(".card-middle").click(modalMiddle);
+                    $(".card-right").click(modalRight);
+                    alert("validation du transport réussi");
+                });
+            }
+        }
+        else {
+            alert("Erreur au cours de la validation du transport");
+        }
+    });
+}
+
+validDelivery = function(event) {
+    console.log(event.data.index);
+    $.get(URL.url+"/validDelivery/"+commands[event.data.index]._id, function(data, status){
+        console.log(status);
+        if(status == "success"){
+            if(data == false)
+                alert("Erreur au cours de la validation de la livraison");
+            else{
+                $("#myModal").modal("hide");
+                loadCommands(function(){
+                    $(".card-left").click(modalLeft);
+                    $(".card-middle").click(modalMiddle);
+                    $(".card-right").click(modalRight);
+                });
+            }
+        }
+        else {
+            alert("Erreur au cours de la validation de la livraison");
+        }
+    });
+ 
+    return false;
+}
+
 sizeBoard = function() {
     var maxHeight = $("#scroll-container").height();
     $(".middle-orders").height(maxHeight);
-    $(".delivery-orders").height(maxHeight);
 }
 
 /***/ })

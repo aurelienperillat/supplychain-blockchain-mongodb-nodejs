@@ -8,7 +8,8 @@ module.exports = {
         adminCatalogue: "./public/js/adminCataloguePackage.js",
         fournisseurCatalogue: "./public/js/fournisseurCataloguePackage.js",
         client: "./public/js/clientPackage.js",
-        clientCatalogue: "./public/js/clientCataloguePackage.js"
+        clientCatalogue: "./public/js/clientCataloguePackage.js",
+        transporteur: "./public/js/transporteurPackage.js"
     },
     output: {
         path: path.resolve(__dirname, "public/build/bundles"),

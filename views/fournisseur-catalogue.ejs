@@ -20,9 +20,9 @@
                             </a>
                         </li>
                             <ul class="collapse nav" id="menu-vente">
-                                <li><a href=<%= url %>/adminCatalogue class="menu-link">Gestion stock/catalogue</a></li>
-                                <li><a href=<%= url %>/home/1 class="menu-link">Gestion commandes client</a></li>
-                                <li><a href="#" class="menu-link">commandes client archivées</a></li>
+                                <li><a href=<%= url %>/home/1 class="menu-link">Gestion stock/catalogue</a></li>
+                                <li><a href=<%= url %>/adminCommand class="menu-link">Gestion commandes client</a></li>
+                                <li><a href="#" class="menu-link inactiveLink">commandes client archivées</a></li>
                             </ul>
                         <li>
                             <a href="#menu-achat" class="menu-link" data-toggle="collapse">Achat
@@ -31,8 +31,8 @@
                         </li>
                             <ul class="collapse nav" id="menu-achat">
                                 <li><a href="#" class="menu-link">Catalogue fournisseur</a></li>
-                                <li><a href="#" class="menu-link">Gestion commandes fournisseur</a></li>
-                                <li><a href="#" class="menu-link">Commandes fournisseur archivées</a></li>
+                                <li><a href=<%= url %>/fournisseurCommand class="menu-link">Gestion commandes fournisseur</a></li>
+                                <li><a href="#" class="menu-link inactiveLink">Commandes fournisseur archivées</a></li>
                             </ul>
                     </ul>
                 </nav>
@@ -40,7 +40,7 @@
 
             <div class="col-sm-10 main-right-col">
                 <div class="row top-right-row">
-                    <span class="span-center col-sm-10"><%= user.company %> - Catalogue fournisseur</span> 
+                    <span class="span-center col-sm-10">Catalogue fournisseur</span> 
                 </div>
                 <div class="row main-right-row" id="scroll-container">
                 </div>

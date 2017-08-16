@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../css/admin-catalogue.css" rel="stylesheet">
+    <link href="../../css/admin.css" rel="stylesheet">
   </head>
   <body>
         <div class="row main-row">
@@ -20,7 +20,7 @@
                             </a>
                         </li>
                             <ul class="collapse nav" id="menu-vente">
-                                <li><a href="#" class="menu-link">Gestion stock/catalogue</a></li>
+                                <li><a href=<%= url %>/home/1 class="menu-link">Gestion stock/catalogue</a></li>
                                 <li><a href=<%= url %>/adminCommand class="menu-link">Gestion commandes client</a></li>
                                 <li><a href="#" class="menu-link inactiveLink">commandes client archivées</a></li>
                             </ul>
@@ -31,7 +31,7 @@
                         </li>
                             <ul class="collapse nav" id="menu-achat">
                                 <li><a href=<%= url %>/fournisseurCatalogue class="menu-link">Catalogue fournisseur</a></li>
-                                <li><a href=<%= url %>/fournisseurCommand class="menu-link">Gestion commandes fournisseur</a></li>
+                                <li><a href="#" class="menu-link">Gestion commandes fournisseur</a></li>
                                 <li><a href="#" class="menu-link inactiveLink">Commandes fournisseur archivées</a></li>
                             </ul>
                     </ul>
@@ -40,12 +40,25 @@
 
             <div class="col-sm-10 main-right-col">
                 <div class="row top-right-row">
-                    <span class="span-center col-sm-10">stock/Catalogue</span>
-                    <div class="col-sm-2" id="newProduct">
-                          <span class="glyphicon glyphicon-plus">Nouveau Produit</span>
-                    </div>  
+                    <span class="span-center">Commandes fournisseur</span>  
                 </div>
                 <div class="row main-right-row" id="scroll-container">
+                    <div class="col-sm-3 left-orders">
+                        <p class="title">Commandes reçues / à valider</p>
+                        <ul id="left-list"></ul>
+                    </div>
+                    <div class="col-sm-3 middle-orders">
+                        <p class="title">Commandes en préparation</p>
+                        <ul id="middle-list"></ul>
+                    </div>
+                    <div class="col-sm-3 deliver-orders">
+                        <p class="title">Commandes en cours de transport</p>
+                        <ul id="deliver-list"></ul>
+                    </div>
+                    <div class="col-sm-3 right-orders">
+                        <p class="title">Commandes terminées</p>
+                        <ul id="right-list"></ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,6 +72,6 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="../../bootstrap/js/bootstrap.min.js"></script>
-        <script src="../../build/bundles/adminCatalogueBundle.js"></script>
+        <script src="../../build/bundles/clientBundle.js"></script>
     </body>
 </html>

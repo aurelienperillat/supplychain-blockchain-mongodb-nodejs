@@ -7,11 +7,21 @@ ul {
     padding: 0;
 }
 
+.inactiveLink {
+   pointer-events: none;
+   cursor: default;
+}
+
 .title {
     text-align: center;
     color: #1A2930;
     height: 40px;
     padding-top: 5px;
+}
+
+.main-row {
+    margin-left: 1px;
+    margin-right: 1px;
 }
 
 .main-left-col {

@@ -5,39 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../css/client.css" rel="stylesheet">
+    <link href="../../css/transporteur.css" rel="stylesheet">
   </head>
   <body>
         <div class="row main-row">
             <div class="col-sm-2 main-left-col">
             <nav class="nav-sidebar">
                 <ul class="nav">
-                    <li id="profile_label">CLIENT</li>
-                    <li id="disconnect"><a href=<%= url %>/logout class="menu-link">Deconnexion</a></li>
-                    <li><a href=<%= url %>/home/2 class="menu-link top-list">Catalogue des produits</a></li>
-                    <li><a href="#" class="menu-link">Mes commandes</a></li>
-                    <li id="archive"><a href="#" class="menu-link inactiveLink">commandes archivées</a></li>
+                    <li id="profile_label">Trasnporteur</li>
+                    <li id="disconnect"><a class="menu-link" href=<%= url %>/logout>Deconnexion</a></li>
+                    <li><a href="#" class="menu-link top-list">Transport en cours</a></li>
+                    <li id="archive"><a href="" class="menu-link inactiveLink">Transport archivées</a></li>
                 </ul>
             </nav>
             </div>
             <div class="col-sm-10 main-right-col">
                 <div class="row top-right-row">
-                    <span class="span-center">Commandes en cours</span>  
+                    <span class="span-center">Transports en cours</span>  
                 </div>
                 <div class="row main-right-row" id="scroll-container">
-                    <div class="col-sm-3 left-orders">
+                    <div class="col-sm-4 left-orders">
                         <p class="title">Commandes en attente de validation</p>
                         <ul id="left-list"></ul>
                     </div>
-                    <div class="col-sm-3 middle-orders">
-                        <p class="title">Commandes en cours de préparation</p>
+                    <div class="col-sm-4 middle-orders">
+                        <p class="title">Commandes en cours de livraison</p>
                         <ul id="middle-list"></ul>
                     </div>
-                    <div class="col-sm-3 deliver-orders">
-                        <p class="title">Commandes en cours de livraison</p>
-                        <ul id="deliver-list"></ul>
-                    </div>
-                    <div class="col-sm-3 right-orders">
+                    <div class="col-sm-4 right-orders">
                         <p class="title">Commandes livrées</p>
                         <ul id="right-list"></ul>
                     </div>
@@ -53,6 +48,6 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="../../bootstrap/js/bootstrap.min.js"></script>
-        <script src="../../build/bundles/clientBundle.js"></script>
+        <script src="../../build/bundles/transporteurBundle.js"></script>
     </body>
 </html>

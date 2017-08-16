@@ -64,8 +64,8 @@ router.get("/command-client", function(req, res){
     });
 });
 
-router.get("/catalogue", function(req, res){
-    res.render("client-catalogue.ejs", {user : req.session.user, url : URL.url});
+router.get("/myCommand", function(req, res){
+    res.render("client.ejs", {user : req.session.user, url : URL.url});
 });
 
 router.post("/addProduct", function(req, res){
@@ -138,6 +138,12 @@ router.post("/panier", function(req, res){
                     prices : prices,
                     descriptifs : descriptifs    
                },
+               collis : {
+                   poids : 0,
+                   dimension : 0
+               },
+               transporteurID : "",
+               trackingID : "",
                totalprice : panierPrice,
                statut : 1
             },
@@ -155,5 +161,8 @@ router.post("/panier", function(req, res){
     req.session.panierPrice = 0;
 });
 
+router.get("/getUser", function(req, res) {
+    res.send(req.session.user);
+});
 
 module.exports = router;

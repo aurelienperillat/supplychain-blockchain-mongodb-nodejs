@@ -10330,10 +10330,7 @@ return jQuery;
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = {
-	"url": "https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net",
-	"inactiveurl": "http://localhost:8080"
-};
+module.exports = {"url":"https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net","inactiveurl":"http://localhost:8080"}
 
 /***/ }),
 /* 2 */
@@ -11056,8 +11053,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\Blockchain\\\\compose-mongodb-helloworld-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\Blockchain\\\\compose-mongodb-helloworld-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js", function() {
-			var newContent = require("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\Blockchain\\\\compose-mongodb-helloworld-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\Blockchain\\\\compose-mongodb-helloworld-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js");
+		module.hot.accept("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js", function() {
+			var newContent = require("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -11565,6 +11562,10 @@ loadProducts = function(callback){
                             "</div>"+
                         "</div>"
                     );
+
+                    if(products[i].provision > 0){
+                        $(".card[name="+i+"]").append("<P class='vignette'>auto</p>");
+                    }
                 }
                 callback();
             }
@@ -11584,8 +11585,8 @@ modal = function(){
     console.log(product);
     
     $(".modal-body").html(
-        "<h2>Configurer une règle de réapprovisionement</h2>"+
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
+        "<h2>Configurer une règle de réapprovisionement</h2>"+
         "<p>Descriptif produit : "+product.descriptif+"</p>"+
         "<p>Réference produit : "+product.ref+"</p>"+
         "<p>Prix unitaire : "+product.price+" €</p>"+

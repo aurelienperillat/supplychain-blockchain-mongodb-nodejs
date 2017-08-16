@@ -12,6 +12,11 @@ ul {
     margin-right: 1px;
 }
 
+.inactiveLink {
+   pointer-events: none;
+   cursor: default;
+}
+
 .title {
     text-align: center;
     color: #1A2930;

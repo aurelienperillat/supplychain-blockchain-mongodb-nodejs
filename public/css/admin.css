@@ -31,6 +31,16 @@ ul {
     position: absolute;
 }
 
+.inactiveLink {
+   pointer-events: none;
+   cursor: default;
+}
+
+.vignette {
+    float: right;
+    background: red;
+}
+
 .menu-link {
     color: white;
     border-bottom: 1px solid #0A1612;

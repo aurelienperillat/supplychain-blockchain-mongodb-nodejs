@@ -35,6 +35,10 @@ loadProducts = function(callback){
                             "</div>"+
                         "</div>"
                     );
+
+                    if(products[i].provision > 0){
+                        $(".card[name="+i+"]").append("<P class='vignette'>auto</p>");
+                    }
                 }
                 callback();
             }
@@ -54,8 +58,8 @@ modal = function(){
     console.log(product);
     
     $(".modal-body").html(
-        "<h2>Configurer une règle de réapprovisionement</h2>"+
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
+        "<h2>Configurer une règle de réapprovisionement</h2>"+
         "<p>Descriptif produit : "+product.descriptif+"</p>"+
         "<p>Réference produit : "+product.ref+"</p>"+
         "<p>Prix unitaire : "+product.price+" €</p>"+

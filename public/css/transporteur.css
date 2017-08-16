@@ -7,6 +7,11 @@ ul {
     padding: 0;
 }
 
+.inactiveLink {
+   pointer-events: none;
+   cursor: default;
+}
+
 .title {
     text-align: center;
     color: #1A2930;
@@ -14,20 +19,15 @@ ul {
     padding-top: 5px;
 }
 
-.inactiveLink {
-   pointer-events: none;
-   cursor: default;
+.main-row {
+    margin-left: 1px;
+    margin-right: 1px;
 }
 
 .main-left-col {
     border: 1px solid #0A1612;
     background-color: #1A2930;
     color: black;
-}
-
-.main-row {
-    margin-left: 1px;
-    margin-right: 1px;
 }
 
 .nav-sidebar {
@@ -64,8 +64,10 @@ ul {
     overflow: auto;
 }
 
-.container-card {
-    padding: 10px;
+.middle-orders {
+    border-left: 1px solid #0A1612;
+    border-right: 1px solid #0A1612;
+    height: 100%;
 }
 
 .card {
@@ -73,35 +75,20 @@ ul {
     border: 1px solid #0A1612;
     border-radius: 10px;
     height: 150px;
-    width: 100%;
+    margin-bottom: 10px;
+    margin-top: 10px;
     text-align: center;
-    padding: 5px;
+    padding-top: 5px;
     color: white;
     cursor: pointer;
 }
 
-#panier {
-    display: inline;
-    border: 1px solid #F7CE3E;
-    background: #F7CE3E;
-    color: white;
-    cursor: pointer;
-}
-
-#panier:hover {
-    display: inline;
-    border: 1px solid #F7CE3E;
-    background: #F7CE3E;
-    color: black;
-    cursor: pointer; 
-}
-
-.custom-modal {
+#myModal {
     top : 20%;
     left : 20%;
 }
 
-.custom-modal-content {
+#myModalContent {
     background-color: #F7CE3E;
     color: white;
     padding: 5px;
