@@ -6,7 +6,6 @@ var blockchainNetwork = require('./src/blockchain/blockchain_network.js');
 var datastore = require('./src/database/datastore.js');
 var logHelper = require('./src/logging/logging.js');
 
-
 var constants = require('./src/constants/constants.js');
 var util = require('./src/utils/util.js');
 var validate = require('./src/utils/validation_helper.js');
@@ -93,6 +92,55 @@ function getCloudantKeyValStore(datastore, dbName){
 		});
 	});
 }
+
+function addUser(params) {
+    return new Promise(function(resolve, reject){
+        try{
+            logHelper.logEntryAndInput(logger, 'addUser', params);
+
+            if(!validate.isValidJson(params)){
+                logHelper.logError(logger, 'addUser', 'Invalid params');
+                return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add user. Invalid params' })
+            }
+
+            var user = params.user;
+            if(!validate.isValidString(user)){
+                logHelper.logError(logger, 'addUser', 'Invalid user');
+                return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add user. Invalid user' })
+            }
+
+            var affiliation = params.affiliation;
+            if(!validate.isValidString(affiliation)){
+                logHelper.logError(logger, 'addUser', 'Invalid affiliation');
+                return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add user. Invalid affiliation' })
+            }
+
+            var hash = params.hash;
+            if(!validate.isValidString(hash)){
+                logHelper.logError(logger, 'addUser', 'Invalid hash');
+                return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add user. Invalid hash' })
+            }
+
+            var reqSpec = bcSdk.getRequestSpec({functionName: 'addUser', args: [user, affiliation, userHash]});
+            bcSdk.recursiveInvoke({requestSpec: reqSpec, user: user})
+            .then(function(resp){
+                logHelper.logMessage(logger, 'addUser', 'Successfully add user', resp.body);
+                return resolve({statusCode: constants.SUCCESS, body: mortgageApplication});
+            })
+            .catch(function(err){   
+                logHelper.logError(logger, 'addUser', 'Successfully add user', err);
+                return reject({statusCode: constants.INTERNAL_SERVER_ERROR, body: 'Could not add user' });
+
+            });
+
+        }
+        catch(err){
+            logHelper.logError(logger, 'add user', 'Could not create add user on blockchain ledger: ', err);
+            return reject({statusCode: constants.INTERNAL_SERVER_ERROR, body: 'Could not add user' });
+        }
+    });
+}
+
 
 module.exports = {
     setup: setup
