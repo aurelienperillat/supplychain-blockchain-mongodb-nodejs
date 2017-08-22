@@ -107,3 +107,8 @@ ul {
 #disconnect {
     margin-bottom: 20px;
 }
+
+.vignette {
+    float: right;
+    background: red;
+}

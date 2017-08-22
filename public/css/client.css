@@ -79,7 +79,7 @@ ul {
     background-color: #1A2930;
     border: 1px solid #0A1612;
     border-radius: 10px;
-    height: 150px;
+    height: 200px;
     margin-bottom: 10px;
     margin-top: 10px;
     text-align: center;
@@ -113,4 +113,9 @@ ul {
 
 #disconnect {
     margin-bottom: 20px;
+}
+
+.vignette {
+    float: right;
+    background: red;
 }

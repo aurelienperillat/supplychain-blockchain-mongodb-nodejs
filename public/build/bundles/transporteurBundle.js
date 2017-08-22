@@ -11732,7 +11732,7 @@ modalRight = function() {
         "</br>"+
         "<p>collis :</p>"+
         "<P>&nbsp;&nbsp;&nbsp;&nbsp;poids : "+command.collis.poids+" kg</p>"+
-        "<P>&nbsp;&nbsp;&nbsp;&nbsp;dimension : "+command.collis.dimension+" m</p>"+
+        "<P>&nbsp;&nbsp;&nbsp;&nbsp;dimension : "+command.collis.dimension+" m³</p>"+
         "</br>"+
         "<p>TrackingID : " + command.TrackingID +"</p>"+
         "<div class='row'>"+    

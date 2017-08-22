@@ -11566,7 +11566,7 @@ loadCommands = function(callback){
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<p>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+
                                 "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+ 
+                                "<p>Montant total : "+data[i].totalprice+" €</p>"+ 
                             "</li>"
                         );
                     }
@@ -11577,7 +11577,7 @@ loadCommands = function(callback){
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+ 
                                 "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
+                                "<p>Montant total : "+data[i].totalprice+" €</p>"+
                             "</li>"
                         );
                     }
@@ -11588,7 +11588,7 @@ loadCommands = function(callback){
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+ 
                                 "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
+                                "<p>Montant total : "+data[i].totalprice+" €</p>"+
                                 "<p>N° Tracking : "+data[i].trackingID+"</p>"+
                             "</li>"
                         );
@@ -11600,7 +11600,7 @@ loadCommands = function(callback){
                                 "<p>Date : "+data[i].date+"</p>"+
                                 "<P>Client : "+data[i].clientname+" "+data[i].clientlastname+"</P>"+
                                 "<p>Entreprise : "+data[i].clientcompany+"</p>"+
-                                "<p>Montant total : "+data[i].totalprice+"</p>"+
+                                "<p>Montant total : "+data[i].totalprice+" €</p>"+
                                 "<p>N° Tracking : "+data[i].trackingID+"</p>"+ 
                             "</li>"
                         );

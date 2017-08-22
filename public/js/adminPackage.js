@@ -114,7 +114,7 @@ modalLeft = function(){
             "</thead>"+
             "<tbody id='modal-table'></tbody>"+
         "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<p>Montant Total : "+command.totalprice+" €</p></br>"+
         "<div class='row'>"+    
             "<button type='button' class='btn btn-success col-sm-offset-3 col-sm-2' id='validOrder'>Valider</button>"+
             "<button type='button' class='btn btn-danger col-sm-offset-2 col-sm-2' id='denyOrder'>Refuser</button>"+
@@ -164,7 +164,7 @@ modalMiddle = function() {
         "</thead>"+
         "<tbody id='modal-table'></tbody>"+
         "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<p>Montant Total : "+command.totalprice+" €</p></br>"+
         "<h2>Organiser transport : </h2>"+
         "<div class='form-group'>"+
             "<label class='control-label' for='dimension'>Dimension du collis</label>"+
@@ -199,7 +199,7 @@ modalMiddle = function() {
             "</thead>"+
             "<tbody id='modal-table'></tbody>"+
             "</table>"+
-            "<p>Total : "+command.totalprice+" €</p></br>"+
+            "<p>Montant Total : "+command.totalprice+" €</p>"+
             "</br>"+
             "<p>N° Tracking : En attente...</p>"+
             "<p>information collis :<p>"+
@@ -299,7 +299,7 @@ modalRight = function() {
         "</thead>"+
         "<tbody id='modal-table'></tbody>"+
         "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<p>Montant Total : "+command.totalprice+" €</p></br>"+
         "<p>N° Tracking : "+command.trackingID+"</p>"+
         "<p>information collis :<p>"+
         "<p>&nbsp;&nbsp;-poids : "+command.collis.poids+" kg</p>"+

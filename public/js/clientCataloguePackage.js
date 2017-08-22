@@ -55,18 +55,14 @@ modal = function(){
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
         "<h2>Ajouter cet article au panier<h2>"+
-        "<form class='form-horizontal' onsubmit='return false;'>"+
+        "<form class='form-inline' onsubmit='return false;'>"+
             "<div class='form-group'>"+
                 "<label class='control-label' for='quantity'>Quantité souhaitée</label>"+
-                "<input id='quantity' type='text' placeholder='Quantité' class='form-control input-md'>"+  
+                "<input id='quantity' type='number' class='form-control input-md'>"+  
             "</div>"+
-             "<div class='form-group'>"+
-                "<span id='total-price'>Prix total : </span>"+
-            "</div>"+
-            "<div class='form-group'>"+
-                "<button id='addProduct' type='button' class='btn btn-success'>Ajouter au panier</button>"+
-            "</div>"+
-        "</form>"
+        "</form>"+
+        "<p id='total-price'>Prix total : </p>"+
+        "<button id='addProduct' type='button' class='btn btn-success col-sm-offset-4 col-sm-4'>Ajouter au panier</button>"
     );
 
     $("#quantity").change(function(){
@@ -129,7 +125,7 @@ modalPanier = function(){
                         "</thead>"+
                         "<tbody id='modal-table'></tbody>"+
                     "</table>"+
-                    "<p>Total : "+data.panierPrice+" €</p></br>"+
+                    "<p>Montant Total : "+data.panierPrice+" €</p></br>"+
                     "<div class='row'>"+    
                         "<button type='button' class='btn btn-success col-sm-offset-5 col-sm-2' id='valid'>Valider commande</button>"+
                     "</div>"

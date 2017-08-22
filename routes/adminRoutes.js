@@ -385,7 +385,7 @@ router.post("/askTransport", function(req, res){
     console.log(req.body.dimension);
     console.log(req.body.id);
     var transporteurID;
-    var collis = {poids : parseInt(req.body.poids, 10), dimension : parseInt(req.body.dimension, 10)}
+    var collis = {poids : req.body.poids, dimension : req.body.dimension}
     mongoClient.connect(credentials.uri, {
         mongos: {
             ssl: true,

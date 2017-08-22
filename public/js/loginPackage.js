@@ -1,6 +1,8 @@
 var $ = require("jquery");
 var URL = require("../../url.json");
 
+
+
 window.addEventListener('load', function() {
     $("#login").click(login);
     $("#signin2").click(signin);
