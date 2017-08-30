@@ -2,6 +2,7 @@ var express = require('express');
 var cfenv = require('cfenv');
 var mongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var chainClient = require('../src/blockchainClient.js');
 
 const util = require('util')
 const assert = require('assert');
@@ -32,6 +33,11 @@ var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
 
 // This is a global variable we'll use for handing the MongoDB client around
 var mongodb;
+
+//prepare the chainClient to interact with the blockchain
+chainClient.setup().catch(function(err){
+    console.log(err);
+});
 
 router.get("/command", function(req, res){
     mongoClient.connect(credentials.uri, {
@@ -107,34 +113,41 @@ router.get("/product", function(req, res){
 
 router.post("/newProduct", function(req, res){
     console.log(req.body.descriptif);
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("product").insertOne({
-               descriptif : req.body.descriptif,
-               ref : req.body.ref,
-               price : parseInt(req.body.price, 10),
-               quantity : parseInt(req.body.stock, 10),
-               criticalpoint : parseInt(req.body.critical, 10),
-               provision : 0
-            },
-            function(err, result){
-                if(err == null) res.send(true);
-                else res.send(false)
-            });
-        }
-        else res.send(false);
-        mongodb.close();
-        db.close();
-    });
+    chainClient.addProduct({ref: req.body.ref, description: req.body.descriptif, price: req.body.price, quantity: req.body.stock, critical: req.body.critical, user: req.session.user.address})
+    .then(function(resp){
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("product").insertOne({
+                description : req.body.descriptif,
+                ref : req.body.ref,
+                price : parseFloat(req.body.price),
+                quantity : parseInt(req.body.stock, 10),
+                critical : parseInt(req.body.critical, 10),
+                provision : 0
+                },
+                function(err, result){
+                    if(err == null) res.send(true);
+                    else res.send(false)
+                });
+            }
+            else res.send(false);
+            mongodb.close();
+            db.close();
+        });
+    })
+    .catch(function(err){
+        console.log(err)
+        res.send(false);
+    })    
 });
 
 router.post("/modifyProduct", function(req, res){
@@ -154,11 +167,11 @@ router.post("/modifyProduct", function(req, res){
                 ref : req.body.curentref
             }, 
             {$set : {
-               descriptif : req.body.descriptif,
+               description : req.body.descriptif,
                ref : req.body.ref,
-               price : parseInt(req.body.price, 10),
+               price : parseFloat(req.body.price),
                quantity : parseInt(req.body.stock, 10),
-               criticalpoint : parseInt(req.body.critical, 10)
+               critical : parseInt(req.body.critical, 10)
             }},
             function(err, result){
                 if(err) {
@@ -175,112 +188,140 @@ router.post("/modifyProduct", function(req, res){
 });
 
 router.post("/addRule", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("product").updateOne(
-            {
-                ref : req.body.product.ref
-            }, 
-            {$set : {
-               provision : parseInt(req.body.provision, 10)
-            }},
-            function(err, result){
-                if(err) {
-                    res.send(false);
-                    console.log(err);
-                }
-                else res.send(true)
-            });
-        }
-        else res.send(false);
-        mongodb.close();
-        db.close();
-    });
+    chainClient.setProvision({ref: req.body.product.ref, quantity: req.body.provision, user: req.session.user.address})
+    .then(function(resp){
+        console.log(resp);
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("product").updateOne(
+                {
+                    ref : req.body.product.ref
+                }, 
+                {$set : {
+                provision : parseInt(req.body.provision, 10)
+                }},
+                function(err, result){
+                    if(err) {
+                        res.send(false);
+                        console.log(err);
+                    }
+                    else res.send(true)
+                });
+            }
+            else res.send(false);
+            mongodb.close();
+            db.close();
+        });
+    })
+    .catch(function(err){
+        console.log(err)
+        res.send(false);
+    })
 });
 
 router.post("/denyOrder", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("command").updateOne(
-            {
-                _id : new ObjectId(req.body.id)
-            }, 
-            {$set : {
-                statut : -1
-            }},
-            function(err, result){
-                if(err) {
-                    res.send(false);
-                    console.log(err);
-                }
-                else {
-                    res.send(true)
-                    mongodb.close();
-                    db.close();
-                }
-            });
-        }
-        else {
-            res.send(false);
-            console.log(err);
-        }
-    });
+    chainClient.setState({state : "4", ref: req.body.id, user: req.session.user.address})
+    .then(function(resp){
+        console.log(resp);
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("command").updateOne(
+                {
+                    _id : new ObjectId(req.body.id)
+                }, 
+                {$set : {
+                    statut : 4
+                }},
+                function(err, result){
+                    if(err) {
+                        res.send(false);
+                        console.log(err);
+                    }
+                    else {
+                        res.send(true)
+                        mongodb.close();
+                        db.close();
+                    }
+                });
+            }
+            else {
+                res.send(false);
+                console.log(err);
+                mongodb.close();
+                db.close();
+            }
+        });
+    })
+    .catch(function(err){
+        res.send(false);
+        console.log(err);
+    })
 });
 
 router.post("/archivOrder", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("command").updateOne(
-            {
-                _id : new ObjectId(req.body.id)
-            }, 
-            {$set : {
-                statut : 5
-            }},
-            function(err, result){
-                if(err) {
-                    res.send(false);
-                    console.log(err);
-                }
-                else {
-                    res.send(true)
-                    mongodb.close();
-                    db.close();
-                }
-            });
-        }
-        else {
-            res.send(false);
-            console.log(err);
-        }
-    });
+    chainClient.setState({state : "5", ref: req.body.id, user: req.session.user.address})
+    .then(function(resp){
+        console.log(resp);
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("command").updateOne(
+                {
+                    _id : new ObjectId(req.body.id)
+                }, 
+                {$set : {
+                    statut : 5
+                }},
+                function(err, result){
+                    if(err) {
+                        res.send(false);
+                        console.log(err);
+                    }
+                    else {
+                        res.send(true)
+                        mongodb.close();
+                        db.close();
+                    }
+                });
+            }
+            else {
+                res.send(false);
+                console.log(err);
+                mongodb.close();
+                db.close();
+            }
+        });
+    })
+    .catch(function(err){
+        res.send(false);
+        console.log(err);
+    })
 });
 
 router.get("/validOrder/:id", function(req, res){
@@ -308,15 +349,26 @@ router.get("/validOrder/:id", function(req, res){
                 else if(docs.length == 0) res.send(false);
                 else {
                     command = docs[0];
-                    for(i=0; i<command.products.refs.length; i++){
-                        findProductAndDecrease(req, res, db, mongodb, command, i, command.products.refs.length);
-                    }
+                    chainClient.majProduct({user: req.session.user.address, refs: command.products.refs, quantities: command.products.quantities, ref: req.params.id})
+                    .then(function(resp){
+                        for(i=0; i<command.products.refs.length; i++){
+                            findProductAndDecrease(req, res, db, mongodb, command, i, command.products.refs.length);
+                        }
+                    })
+                    .catch(function(err){
+                        res.send(false);
+                        console.log(err);
+                        mongodb.close();
+                        db.close();
+                    })
                 }
             });
         }
         else {
             res.send(false);
             console.log(err);
+            mongodb.close();
+            db.close();
         }
     });
 });
@@ -407,27 +459,39 @@ router.post("/askTransport", function(req, res){
                 }
                 else if(docs.length == 0) res.send("none");
                 else {
-                    transporteurID = docs[0]._id
-                    console.log(transporteurID);
-                    mongodb.collection("command").updateOne(
-                        {
-                            _id : new ObjectId(req.body.id)
-                        }, 
-                        {$set : {
-                            transporteurID :transporteurID,
-                            collis : collis
-                        }},
-                        function(err, result){
-                            if(err) {
-                                res.send(false);
-                                console.log(err);
+                    chainClient.setTransport({user: req.session.user.address, colis: collis, ref: req.body.id, key: docs[0].address+"@"+docs[0].type})
+                    .then(function(resp){
+                        console.log(resp);
+                        transporteurID = docs[0]._id
+                        console.log(transporteurID);
+                        mongodb.collection("command").updateOne(
+                            {
+                                _id : new ObjectId(req.body.id)
+                            }, 
+                            {$set : {
+                                transporteurID :transporteurID,
+                                collis : collis
+                            }},
+                            function(err, result){
+                                if(err) {
+                                    res.send(false);
+                                    console.log(err);
+                                    mongodb.close();
+                                    db.close();
+                                }
+                                else {
+                                    res.send(true)
+                                    mongodb.close();
+                                    db.close();
                             }
-                            else {
-                                res.send(true)
-                                mongodb.close();
-                                db.close();
-                        }
-                    });
+                        });
+                    })
+                    .catch(function(err){
+                        res.send(false);
+                        console.log(err);
+                        mongodb.close();
+                        db.close();
+                    })
                 }
             });
         }

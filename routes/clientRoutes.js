@@ -1,6 +1,7 @@
 var express = require('express');
 var cfenv = require('cfenv');
 var mongoClient = require('mongodb').MongoClient;
+var chainClient = require('../src/blockchainClient.js');
 
 const util = require('util')
 const assert = require('assert');
@@ -30,6 +31,9 @@ var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
 
 // This is a global variable we'll use for handing the MongoDB client around
 var mongodb;
+
+//prepare the chainClient to interact with the blockchain
+chainClient.setup();
 
 router.get("/command-client", function(req, res){
     console.log(req.session.user.address);
@@ -104,15 +108,17 @@ router.post("/panier", function(req, res){
     var refs = [];
     var quantities = [];
     var prices = [];
-    var descriptifs = []
+    var descriptifs = [];
+    var products = [];
+    var date = new Date();
 
     for(var i=0; i<panier.length; i++) {
+        products.push(panier[i].product)
         refs.push(panier[i].product.ref);
-        quantities.push(panier[i].quantity);
+        quantities.push(panier[i].quantity.toString());
         prices.push(panier[i].product.price);
-        descriptifs.push(panier[i].product.descriptif);
+        descriptifs.push(panier[i].product.description);
     }
-
 
     mongoClient.connect(credentials.uri, {
         mongos: {
@@ -126,7 +132,7 @@ router.post("/panier", function(req, res){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("command").insertOne({
-               date : new Date(),
+               date : date,
                clientname : user.name,
                clientlastname : user.lastname,
                clientAddress : user.address,
@@ -148,17 +154,54 @@ router.post("/panier", function(req, res){
                statut : 1
             },
             function(err, result){
-                if(err == null) res.send(true);
-                else res.send(false)
+                if(err == null) {
+                    mongodb.collection("command").find({
+                        date : date
+                    }).toArray(function(err, docs){
+                        if(err) {
+                            res.send(false);
+                            console.log(err);
+                            mongodb.close();
+                             db.close();
+                        }
+                        else if(docs.length == 0) {
+                            mongodb.close();
+                            db.close();
+                            res.send("none"); 
+                        } 
+                        else {
+                            chainClient.addOrder({user: req.session.user, products: products, quantities: quantities, totalprice: panierPrice.toString(), ref: docs[0]._id.toString()})
+                            .then(function(resp){
+                              console.log(resp);  
+                              req.session.panier = [];
+                              req.session.panierPrice = 0;
+                              res.send(true);
+                              mongodb.close();
+                              db.close();  
+                            })
+                            .catch(function(err){
+                                console.log(err);
+                                req.session.panier = [];
+                                req.session.panierPrice = 0;
+                                res.send(false);
+                                mongodb.close();
+                                db.close();
+                            })
+                        }
+                    })
+                } else {
+                    mongodb.close();
+                    db.close();
+                    res.send(false);
+                }  
             });
         }
-        else res.send(false);
-        mongodb.close();
-        db.close();
+        else {
+            res.send(false);
+            mongodb.close();
+            db.close();
+        }
     });
-
-    req.session.panier = [];
-    req.session.panierPrice = 0;
 });
 
 router.get("/getUser", function(req, res) {

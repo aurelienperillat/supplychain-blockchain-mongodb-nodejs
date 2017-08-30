@@ -2,6 +2,7 @@ var express = require('express');
 var cfenv = require('cfenv');
 var mongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var chainClient = require('../src/blockchainClient.js');
 
 const util = require('util')
 const assert = require('assert');
@@ -32,6 +33,11 @@ var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
 
 // This is a global variable we'll use for handing the MongoDB client around
 var mongodb;
+
+//prepare the chainClient to interact with the blockchain
+chainClient.setup().catch(function(err){
+    console.log(err);
+});
 
 router.get("/command-transporteur", function(req, res){
     console.log(req.session.user._id);
@@ -67,70 +73,90 @@ router.get("/command-transporteur", function(req, res){
 });
 
 router.post("/validTransport", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("command").updateOne(
-            {
-                _id : new ObjectId(req.body.id)
-            }, 
-            {$set : {
-               trackingID : req.body.trackingID, 
-               statut : 3
-            }},
-            function(err, result){
-                if(err) {
-                    res.send(false);
-                    console.log(err);
-                }
-                else res.send(true)
-            });
-        }
-        else res.send(false);
-        mongodb.close();
-        db.close();
-    });
+    chainClient.setTrackingID({user: req.session.user.address, trackingID: req.body.trackinID, ref: req.body.id})
+    .then(function(resp){
+        console.log(resp);
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("command").updateOne(
+                {
+                    _id : new ObjectId(req.body.id)
+                }, 
+                {$set : {
+                   trackingID : req.body.trackingID, 
+                   statut : 3
+                }},
+                function(err, result){
+                    if(err) {
+                        res.send(false);
+                        console.log(err);
+                    }
+                    else res.send(true)
+                });
+            }
+            else {
+                res.send(false);
+                mongodb.close();
+                db.close();
+            }
+        });
+    }).catch(function(err){
+        console.log(err);
+        res.send(false);
+    })
 });
 
 router.get("/validDelivery/:id", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("command").updateOne(
-            {
-                _id : new ObjectId(req.params.id)
-            }, 
-            {$set : {
-               statut : 4
-            }},
-            function(err, result){
-                if(err) {
-                    res.send(false);
-                    console.log(err);
-                }
-                else res.send(true)
-            });
-        }
-        else res.send(false);
-        mongodb.close();
-        db.close();
-    });
+    chainClient.setState({state : "5", ref: req.body.id, user: req.session.user.address})
+    .then(function(resp){
+        console.log(resp);
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("command").updateOne(
+                {
+                    _id : new ObjectId(req.params.id)
+                }, 
+                {$set : {
+                   statut : 4
+                }},
+                function(err, result){
+                    if(err) {
+                        res.send(false);
+                        console.log(err);
+                    }
+                    else res.send(true)
+                });
+            }
+            else {
+                res.send(false);
+                mongodb.close();
+                db.close();
+            }
+        });
+
+    })
+    .catch(function(err){
+        console.log(err);
+        res.send(false);
+    })
 });
 
 module.exports = router;

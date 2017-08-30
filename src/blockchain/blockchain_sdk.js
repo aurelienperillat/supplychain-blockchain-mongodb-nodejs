@@ -65,7 +65,6 @@ function createMortgageApplication(params) {
                 return reject({statusCode: constants.INTERNAL_SERVER_ERROR, body: 'Could not create mortgageApplication' });
 
             });
-
         }
         catch(err){
             logHelper.logError(logger, 'createMortgageApplication', 'Could not create mortgage application on blockchain ledger: ', err);
@@ -321,12 +320,6 @@ function doRegister(params) {
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not register user. Invalid username' })
             }
 
-            key = params.key;
-            if(!validate.isValidString(key)){
-                logHelper.logError(logger, 'registerUser', 'Invalid key');
-                return reject({statusCode: constants.INVALID_INPUT, body: 'Could not register user. Invalid key' })
-            }
-
             var affiliation = params.affiliation;
             if(!validate.isValidString(affiliation)){
                 logHelper.logError(logger, 'registerUser', 'Invalid affiliation');
@@ -352,7 +345,6 @@ function doRegister(params) {
                         attributes: [
                             {name: 'role', value: affiliation},
                             {name: 'username', value: username},
-                            {name: 'key', value: key}
                         ],
                         affiliation: 'group1',
                         registrar: reg,
@@ -410,7 +402,8 @@ function doLogin(params) {
             var chainAsync = Promise.promisifyAll(chain);
 
             chainAsync.getMemberAsync(username)
-            .then(function(member){
+            .then(function(member){  
+                logHelper.logMessage(logger, 'doLogin', 'Logging member', member);
                 var memberAsync = Promise.promisifyAll(member);
                 return memberAsync.enrollAsync(password);
             })
@@ -522,6 +515,7 @@ function isUserRegistered(params){
 
             chainAsync.getMemberAsync(username)
             .then(function(member){
+                logHelper.logMessage(logger, 'signin', 'Successfully enroll user', resp.body);
                 return resolve({statusCode: constants.SUCCESS, body: member.isRegistered()});
             })
             .catch(function(err){

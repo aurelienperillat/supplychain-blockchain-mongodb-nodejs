@@ -156,14 +156,14 @@ function configureNetwork() {
 				}
 				else{
 					pem = data;
-					chain.setMemberServicesUrl(caURL, { pem: pem });
+					chain.setMemberServicesUrl(caURL, { pem: pem, "grpc.initial_reconnect_backoff_ms": 5000});
 					for (var i in peerURLs) {
-		        		chain.addPeer(peerURLs[i], { pem: pem });
+		        		chain.addPeer(peerURLs[i], { pem: pem, "grpc.initial_reconnect_backoff_ms": 5000});
 		    		}
 
 					/** Uncomment below two lines for testing event framework */
-					chain.eventHubConnect(peerEventHosts[0],{pem:pem});
-					setupEvents();
+					//chain.eventHubConnect(peerEventHosts[0],{pem:pem});
+					//setupEvents();
 
 					recursiveLogin({username: constants['BLOCKCHAIN_REGISTRAR_ID'], password: registrarPassword, chain: chain })
 					.then(function(resp){
@@ -422,16 +422,17 @@ function setupEvents(){
 	var eh = chain.getEventHub();
 	var cid = config['chaincode']['id'];
 	var regid = eh.registerChaincodeEvent(cid, "^eventHub$", function(event) {
+		console.log("Event Triggered");
 		console.log(event);
 		var buffer = new Buffer(event.payload);
 		console.log(buffer.toString());
     });
 	console.log("EVENT SETUP DONE");
-}
-catch(err){
-	console.log(err);
-	console.log("Could not setup events");
-}
+	}
+	catch(err){
+		console.log(err);
+		console.log("Could not setup events");
+	}
 }
 
 process.on('exit', function (){

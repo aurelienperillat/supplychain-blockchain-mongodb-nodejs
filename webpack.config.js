@@ -11,6 +11,7 @@ module.exports = {
         clientCatalogue: "./public/js/clientCataloguePackage.js",
         transporteur: "./public/js/transporteurPackage.js"
     },
+    target: 'web',
     output: {
         path: path.resolve(__dirname, "public/build/bundles"),
         filename: "[name]Bundle.js"
@@ -20,6 +21,19 @@ module.exports = {
             {
                 test: /\.json$/,
                 use: 'json-loader'
+            },
+            {
+                test: /\.node$/,
+                use: 'node-loader'
+            },
+            {
+                test: /\.(html)$/,
+                use: {
+                    loader: 'html-loader',
+                    options: {
+                        attrs: [':data-src']
+                    }
+                }
             }
         ],
         loaders: [
@@ -48,6 +62,7 @@ module.exports = {
             Tab: "exports-loader?Tab!bootstrap/js/dist/tab",
             Tooltip: "exports-loader?Tooltip!bootstrap/js/dist/tooltip",
             Util: "exports-loader?Util!bootstrap/js/dist/util",
-        })
+        }),
+        new webpack.IgnorePlugin(/vertx/)
     ]
 };

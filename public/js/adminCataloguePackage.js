@@ -29,7 +29,7 @@ loadProducts = function(callback){
                     $("#scroll-container").append(
                         "<div class='col-sm-4 container-card'>"+
                             "<div class='card' name="+i+">"+
-                                "<p>Descriptif : "+products[i].descriptif+"</p>"+
+                                "<p>Descriptif : "+products[i].description+"</p>"+
                                 "<p>Réference : "+products[i].ref+"</p>"+
                                 "<p>Prix : "+products[i].price+" €</p>"+
                                 "<p>Stock : "+products[i].quantity+"</p>"+
@@ -56,11 +56,11 @@ modal = function(){
     
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<p>Descriptif produit : "+product.descriptif+"</p>"+
+        "<p>Descriptif produit : "+product.description+"</p>"+
         "<p>Réference produit : "+product.ref+"</p>"+
         "<p>Prix unitaire : "+product.price+" €</p>"+
         "<p>Stock disponible : "+product.quantity+"</p>"+
-        "<p>Stock critique : "+product.criticalpoint+"</p>"+
+        "<p>Stock critique : "+product.critical+"</p>"+
         "<div class='row'>"+    
             "<button type='button' class='btn btn-success col-sm-offset-5 col-sm-2' id='editProduct'>Modifier</button>"+
         "</div>"
@@ -137,13 +137,14 @@ newProduct = function() {
     },
     function(data, status){
         if(status == "success"){
-            if(data == true) alert("Produit ajouté au catalogue");
+            if(data == true){
+                loadProducts(function(){
+                    $(".card").click(modal);
+                });
+                alert("Produit ajouté au catalogue"); 
+            }
             else alert("Erreur lors de l'ajout du produit au catalogue");
         }
-    });
-
-    loadProducts(function(){
-        $(".card").click(modal);
     });
 
     $("#myModal").modal("hide");

@@ -1,6 +1,8 @@
 var express = require('express');
 var cfenv = require('cfenv');
+var sha256 = require('sha256');
 var mongoClient = require('mongodb').MongoClient;
+var chainClient = require('../src/blockchainClient.js');
 
 const util = require('util')
 const assert = require('assert');
@@ -30,6 +32,11 @@ var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
 
 // This is a global variable we'll use for handing the MongoDB client around
 var mongodb;
+
+//prepare the chainClient to interact with the blockchain
+chainClient.setup().catch(function(err){
+    console.log(err);
+});
 
 router.get("/", function(req, res){
     res.render('login.ejs', {url : URL.url});    
@@ -116,35 +123,50 @@ router.post("/signin", function(req, res){
     console.log("deliveryadress" + deliveryAddressVal);
     console.log("company: " + companyVal);
 
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
-        if(err == null){
-            mongodb = db.db("supply-chain");
-            mongodb.collection("user").insertOne({
-                type: typeVal,
-                address: addressVal,
-                password: passwordVal,
-                name: nameVal,
-                lastname: lastNameVal,
-                deliveryaddress: deliveryAddressVal,
-                company : companyVal
-            },
-            function(err, result){
-                if(err == null) res.send(true);
-                else res.send(false)
-            });
-        }
-        else res.send(false);
-        mongodb.close();
-        db.close();
-    });
+    chainClient.signin({user: addressVal, affiliation: typeVal})
+    .then(function(resp){
+        console.log("Succesfullly register and enroll user to blockchain :");
+        console.log(resp.body);
+        var hash = sha256(typeVal+addressVal+nameVal+lastNameVal+passwordVal+deliveryAddressVal+companyVal);
+        return chainClient.addUser({user: addressVal, affiliation: typeVal, hash: hash});
+    }).then(function(resp){
+        console.log("Succesfully add user to blockchain state")
+        console.log(resp.body);
+
+        mongoClient.connect(credentials.uri, {
+            mongos: {
+                ssl: true,
+                sslValidate: true,
+                sslCA: ca,
+                poolSize: 1,
+                reconnectTries: 1
+            }
+        }, function(err, db){
+            if(err == null){
+                mongodb = db.db("supply-chain");
+                mongodb.collection("user").insertOne({
+                    type: typeVal,
+                    address: addressVal,
+                    password: passwordVal,
+                    name: nameVal,
+                    lastname: lastNameVal,
+                    deliveryaddress: deliveryAddressVal,
+                    company : companyVal
+                },
+                function(err, result){
+                    if(err == null) res.send(true);
+                    else res.send(false)
+                });
+            }
+            else res.send(false);
+            mongodb.close();
+            db.close();
+        });
+    })
+    .catch(function(err){
+        console.log(err);
+        res.send(false);
+    })
 });
 
 router.get("/home/:type", function(req, res){
