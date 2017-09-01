@@ -11612,24 +11612,25 @@ modalLeft = function(){
     
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<p>Reférence : "+command._id+"</p>"+
-        "<p>Date : "+command.date+"</p>"+
-        "<P>Client : "+command.clientname+" "+command.clientlastname+"</P>"+
-        "<P>Adresse client : "+command.clientDeliveryAddress+"</p>"+
-        "</br>"+
-        "<p>Détail de la commande :</p>"+
-        "<table class='table'>"+
-            "<thead>"+
-                "<tr>"+
-                    "<th>Descriptif produit</th>"+
-                    "<th>Reférence produit</th>"+
-                    "<th>Quantité</th>"+
-                    "<th>Prix unitaire</th>"+
-                "</tr>"+
-            "</thead>"+
-            "<tbody id='modal-table'></tbody>"+
-        "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<h3>Information sur la commande :</h3>"+
+        "<div class='row'>"+
+            "<div class='col-sm-6'>"+
+                "<p>Expediteur</p>"+
+                "<p>Sogeti</p>"+
+                "<p>11 allée Georges Braque</p>"+
+            "</div>"+
+            "<div class='col-sm-6'>"+
+                "<div style ='float:right'>"+
+                    "<p>Destinataire</p>"+
+                    "<p>"+command.clientname+" "+command.clientlastname+"</p>"+
+                    "<p>"+command.clientDeliveryAddress+"</p>"+
+                "</div>"+
+            "</div>"+
+        "</div>"+
+        "<h3>Préparation du collissage :</h3>"+
+            "<p>Dimensions : "+command.collis.dimension+" m</p>"+
+            "<p>Poids : "+command.collis.poids+" kg</p>"+
+        "<h3>Information sur le transport :</h3>"+
         "<div class='form-group'>"+  
             "<input id='tracking' type='text' placeholder='numéro de tracking' class='form-control input-md'>"+  
         "</div>"+
@@ -11637,17 +11638,6 @@ modalLeft = function(){
             "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='validTransport'>Valider transport</button>"+
         "</div>"
     );
-    
-    for(var i=0; i<command.products.refs.length; i++){
-        $("#modal-table").append(
-            "<tr>"+
-                "<td>"+command.products.descriptifs[i]+"</td>"+
-                "<td>"+command.products.refs[i]+"</td>"+
-                "<td>"+command.products.quantities[i]+"</td>"+
-                "<td>"+command.products.prices[i]+" €</td>"+
-            "</tr>"
-        );
-    }
 
     $("#validTransport").click({index : index}, validTransport);
 
@@ -11662,40 +11652,31 @@ modalMiddle = function() {
     console.log(command);
     
     $(".modal-body").html(
-       "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<p>Reférence : "+command._id+"</p>"+
-        "<p>Date : "+command.date+"</p>"+
-        "<P>Client : "+command.clientname+" "+command.clientlastname+"</P>"+
-        "<P>Adresse client : "+command.clientDeliveryAddress+"</p>"+
-        "</br>"+
-        "<p>Détail de la commande :</p>"+
-        "<table class='table'>"+
-        "<thead>"+
-            "<tr>"+
-                "<th>Descriptif produit</th>"+
-                "<th>Reférence produit</th>"+
-                "<th>Quantité</th>"+
-                "<th>Prix unitaire</th>"+
-            "</tr>"+
-        "</thead>"+
-        "<tbody id='modal-table'></tbody>"+
-        "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
+        "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
+        "<h3>Information sur la commande :</h3>"+
+        "<div class='row'>"+
+            "<div class='col-sm-6'>"+
+                "<p>Expediteur</p>"+
+                "<p>Sogeti</p>"+
+                "<p>11 allée Georges Braque</p>"+
+            "</div>"+
+            "<div class='col-sm-6'>"+
+                "<div style ='float:right'>"+
+                    "<p>Destinataire</p>"+
+                    "<p>"+command.clientname+" "+command.clientlastname+"</p>"+
+                    "<p>"+command.clientDeliveryAddress+"</p>"+
+                "</div>"+
+            "</div>"+
+        "</div>"+
+        "<h3>Préparation du collissage :</h3>"+
+            "<p>Dimensions : "+command.collis.dimension+" m</p>"+
+            "<p>Poids : "+command.collis.poids+" kg</p>"+
+        "<h3>Information sur le transport :</h3>"+
+        "<p>Numéro de tracking : "+command.trackingID+" kg</p>"+
         "<div class='row'>"+    
             "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='validDelivery'>Valider livraison</button>"+
         "</div>"
     );
-
-    for(var i=0; i<command.products.refs.length; i++){
-        $("#modal-table").append(
-            "<tr>"+
-                "<td>"+command.products.descriptifs[i]+"</td>"+
-                "<td>"+command.products.refs[i]+"</td>"+
-                "<td>"+command.products.quantities[i]+"</td>"+
-                "<td>"+command.products.prices[i]+" €</td>"+
-            "</tr>"
-        );
-    }
     
     $("#validDelivery").click({index : index}, validDelivery);
 
@@ -11711,48 +11692,28 @@ modalRight = function() {
 
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<p>Reférence : "+command._id+"</p>"+
-        "<p>Date : "+command.date+"</p>"+
-        "<P>Client : "+command.clientname+" "+command.clientlastname+"</P>"+
-        "<P>Adresse client : "+command.clientDeliveryAddress+"</p>"+
-        "</br>"+
-        "<p>Détail de la commande :</p>"+
-        "<table class='table'>"+
-        "<thead>"+
-            "<tr>"+
-                "<th>Descriptif produit</th>"+
-                "<th>Reférence produit</th>"+
-                "<th>Quantité</th>"+
-                "<th>Prix unitaire</th>"+
-            "</tr>"+
-        "</thead>"+
-        "<tbody id='modal-table'></tbody>"+
-        "</table>"+
-        "<p>Total : "+command.totalprice+" €</p></br>"+
-        "</br>"+
-        "<p>collis :</p>"+
-        "<P>&nbsp;&nbsp;&nbsp;&nbsp;poids : "+command.collis.poids+" kg</p>"+
-        "<P>&nbsp;&nbsp;&nbsp;&nbsp;dimension : "+command.collis.dimension+" m³</p>"+
-        "</br>"+
-        "<p>TrackingID : " + command.TrackingID +"</p>"+
-        "<div class='row'>"+    
-        "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='archivOrder'>Archiver transport</button>"+
-        "</div>"
+        "<h3>Information sur la commande :</h3>"+
+        "<div class='row'>"+
+            "<div class='col-sm-6'>"+
+                "<p>Expediteur</p>"+
+                "<p>Sogeti</p>"+
+                "<p>11 allée Georges Braque</p>"+
+            "</div>"+
+            "<div class='col-sm-6'>"+
+                "<div style ='float:right'>"+
+                    "<p>Destinataire</p>"+
+                    "<p>"+command.clientname+" "+command.clientlastname+"</p>"+
+                    "<p>"+command.clientDeliveryAddress+"</p>"+
+                "</div>"+
+            "</div>"+
+        "</div>"+
+        "<h3>Préparation du collissage :</h3>"+
+            "<p>Dimensions : "+command.collis.dimension+" m</p>"+
+            "<p>Poids : "+command.collis.poids+" kg</p>"+
+        "<h3>Information sur le transport :</h3>"+
+        "<p>Numéro de tracking : "+command.trackingID+" kg</p>"
     );
 
-    for(var i=0; i<command.products.refs.length; i++){
-        $("#modal-table").append(
-            "<tr>"+
-                "<td>"+command.products.descriptifs[i]+"</td>"+
-                "<td>"+command.products.refs[i]+"</td>"+
-                "<td>"+command.products.quantities[i]+"</td>"+
-                "<td>"+command.products.prices[i]+" €</td>"+
-            "</tr>"
-        );
-    }
-
-    //$("#archivOrder").click(archivOrder);
-    
     $("#myModal").modal("show");
     return false; 
 }

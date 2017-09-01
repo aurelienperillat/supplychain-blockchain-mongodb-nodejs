@@ -11579,11 +11579,11 @@ modal = function(){
     
     $(".modal-body").html(
         "<button type='button' class='close' data-dismiss='modal'>&times;</button>"+
-        "<h2>Ajouter cet article au panier<h2>"+
+        "<h2>Ajouter cet article au panier</h2>"+
         "<form class='form-inline' onsubmit='return false;'>"+
             "<div class='form-group'>"+
-                "<label class='control-label' for='quantity'>Quantité souhaitée</label>"+
-                "<input id='quantity' type='number' class='form-control input-md'>"+  
+                "<label for='quantity'>Quantité souhaitée</label>"+
+                "<input id='quantity' type='number' class='form-control'>"+  
             "</div>"+
         "</form>"+
         "<p id='total-price'>Prix total : </p>"+

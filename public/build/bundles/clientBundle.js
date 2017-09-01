@@ -11746,8 +11746,6 @@ modalDelivery = function() {
         );
     }
 
-    //$("#archivOrder").click(archivOrder);
-    
     $("#myModal").modal("show");
     return false; 
 }

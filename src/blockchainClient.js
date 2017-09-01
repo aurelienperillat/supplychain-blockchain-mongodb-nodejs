@@ -338,21 +338,21 @@ function setProvision(params) {
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add Provision. Invalid user' })
             }
 
-            var Ref = params.Ref;
-            if(!validate.isValidString(Ref)){
+            var ref = params.ref;
+            if(!validate.isValidString(ref)){
                 logHelper.logError(logger, 'setProvision', 'Invalid Ref');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add Provision. Invalid Ref' })
             }
 
-            var Provision = params.Provision;
-            if(!validate.isValidString(Provision)){
+            var provision = params.provision;
+            if(!validate.isValidString(provision)){
                 logHelper.logError(logger, 'setProvision', 'Invalid Provision');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add Provision. Invalid Provision' })
             }
 
            
 
-            var reqSpec = bcSdk.getRequestSpec({functionName: 'setProvision', args: [user, Ref,Provision]});
+            var reqSpec = bcSdk.getRequestSpec({functionName: 'setProvision', args: [ref, provision]});
             bcSdk.recursiveInvoke({requestSpec: reqSpec, user: user})
             .then(function(resp){
                 logHelper.logMessage(logger, 'setProvision', 'Successfully add Provision', resp.body);
@@ -372,42 +372,42 @@ function setProvision(params) {
     });
 }
 
-function setTrakingID(params) {
+function setTrackingID(params) {
     return new Promise(function(resolve, reject){
         try{
-            logHelper.logEntryAndInput(logger, 'setTrakingID', params);
+            logHelper.logEntryAndInput(logger, 'setTrackingID', params);
 
             if(!validate.isValidJson(params)){
-                logHelper.logError(logger, 'setTrakingID', 'Invalid params');
+                logHelper.logError(logger, 'setTrackingID', 'Invalid params');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add ID. Invalid params' })
             }
 
             var user = params.user;
             if(!validate.isValidString(user)){
-                logHelper.logError(logger, 'setTrakingID', 'Invalid user');
+                logHelper.logError(logger, 'setTrackingID', 'Invalid user');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add ID. Invalid user' })
             }
 
             var ref = params.ref;
             if(!validate.isValidString(ref)){
-                logHelper.logError(logger, 'setTrakingID', 'Invalid ref');
+                logHelper.logError(logger, 'setTrackingID', 'Invalid ref');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add ID. Invalid Ref' })
             }
 
             var trackingID = params.trackingID;
-            if(!validate.isValidString(trackinID)){
-                logHelper.logError(logger, 'setTrakingID', 'Invalid ID');
+            if(!validate.isValidString(trackingID)){
+                logHelper.logError(logger, 'setTrackingID', 'Invalid ID');
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add ID. Invalid ID' })
             }
 
-            var reqSpec = bcSdk.getRequestSpec({functionName: 'setTrakingID', args: [trackingID, ref]});
+            var reqSpec = bcSdk.getRequestSpec({functionName: 'setTrackingID', args: [trackingID, ref]});
             bcSdk.recursiveInvoke({requestSpec: reqSpec, user: user})
             .then(function(resp){
-                logHelper.logMessage(logger, 'setTrakingID', 'Successfully add ID', resp.body);
+                logHelper.logMessage(logger, 'setTrackingID', 'Successfully add ID', resp.body);
                 return resolve({statusCode: constants.SUCCESS, body:resp.body});
             })
             .catch(function(err){   
-                logHelper.logError(logger, 'setTrakingID', 'Successfully add ID', err);
+                logHelper.logError(logger, 'setTrackingID', 'Could not add ID', err);
                 return reject({statusCode: constants.INTERNAL_SERVER_ERROR, body: 'Could not add ID' });
 
             });
@@ -453,7 +453,7 @@ function setTransport(params) {
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not add carrier. Invalid carrier' })
             }
 
-            var reqSpec = bcSdk.getRequestSpec({functionName: 'setTransport', args: [Json.stringify(colis), ref, key]});
+            var reqSpec = bcSdk.getRequestSpec({functionName: 'setTransport', args: [JSON.stringify(colis), ref, key]});
             bcSdk.recursiveInvoke({requestSpec: reqSpec, user: user})
             .then(function(resp){
                 logHelper.logMessage(logger, 'setTransport', 'Successfully add carrier', resp.body);
@@ -556,14 +556,14 @@ function majProduct(params) {
                 return reject({statusCode: constants.INVALID_INPUT, body: 'Could not update product. Invalid quantities' })
             }
 
-            var reqSpec = bcSdk.getRequestSpec({functionName: 'majProduct', args: [Json.stringify(refs), Json.stringify(quantities), ref]});
+            var reqSpec = bcSdk.getRequestSpec({functionName: 'majProduct', args: [JSON.stringify(refs), JSON.stringify(quantities), ref]});
             bcSdk.recursiveInvoke({requestSpec: reqSpec, user: user})
             .then(function(resp){
                 logHelper.logMessage(logger, 'majProduct', 'Successfully update product', resp.body);
                 return resolve({statusCode: constants.SUCCESS, body:resp.body});
             })
             .catch(function(err){   
-                logHelper.logError(logger, 'majProduct', 'Successfully update product', err);
+                logHelper.logError(logger, 'majProduct', 'Could not update product', err);
                 return reject({statusCode: constants.INTERNAL_SERVER_ERROR, body: 'Could not update product' });
 
             });
@@ -583,7 +583,7 @@ module.exports = {
     addProduct: addProduct,
     majProduct: majProduct,
     setProvision: setProvision,
-    setTrackingID: setTrakingID,
+    setTrackingID: setTrackingID,
     setTransport: setTransport,
     setState: setState
 }

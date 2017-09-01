@@ -73,7 +73,7 @@ router.get("/command-transporteur", function(req, res){
 });
 
 router.post("/validTransport", function(req, res){
-    chainClient.setTrackingID({user: req.session.user.address, trackingID: req.body.trackinID, ref: req.body.id})
+    chainClient.setTrackingID({user: req.session.user.address, trackingID: req.body.trackingID, ref: req.body.id})
     .then(function(resp){
         console.log(resp);
         mongoClient.connect(credentials.uri, {
@@ -116,7 +116,7 @@ router.post("/validTransport", function(req, res){
 });
 
 router.get("/validDelivery/:id", function(req, res){
-    chainClient.setState({state : "5", ref: req.body.id, user: req.session.user.address})
+    chainClient.setState({state : "4", ref: req.params.id, user: req.session.user.address})
     .then(function(resp){
         console.log(resp);
         mongoClient.connect(credentials.uri, {

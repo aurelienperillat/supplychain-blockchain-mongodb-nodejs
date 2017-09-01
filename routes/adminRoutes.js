@@ -188,7 +188,7 @@ router.post("/modifyProduct", function(req, res){
 });
 
 router.post("/addRule", function(req, res){
-    chainClient.setProvision({ref: req.body.product.ref, quantity: req.body.provision, user: req.session.user.address})
+    chainClient.setProvision({ref: req.body.product.ref, provision: req.body.provision, user: req.session.user.address})
     .then(function(resp){
         console.log(resp);
         mongoClient.connect(credentials.uri, {

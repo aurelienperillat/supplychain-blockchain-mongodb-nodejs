@@ -11626,7 +11626,12 @@ addRule = function(event) {
     },
     function(data, status){
         if(status == "success"){
-            if(data == true) alert("Règle ajoutée au produit");
+            if(data == true){
+                alert("Règle ajoutée au produit");
+                loadProducts(function(){
+                    $(".card").click(modal);
+                });
+            } 
             else alert("Erreur lors de l'ajout d'une règle au produit");
         }
     });
