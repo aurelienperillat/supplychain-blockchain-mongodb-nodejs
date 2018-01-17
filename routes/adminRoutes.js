@@ -1,53 +1,30 @@
 var express = require('express');
-var cfenv = require('cfenv');
 var mongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
-var chainClient = require('../src/blockchainClient.js');
-
-const util = require('util')
-const assert = require('assert');
-
 var URL = require("../url.json");
+var Fabric_Client = require('fabric-client');
+var config = require("../config.js");
+var queryHelper = require("../blockchain_helper/query.js");
+var invokeHelper = require("../blockchain_helper/invoke.js");
+
+var cryptoKeyStore = Fabric_Client.newCryptoKeyStore({path: config.hfc_store_path});
+
+var cryptoSuite = Fabric_Client.newCryptoSuite();
+cryptoSuite.setCryptoKeyStore(cryptoKeyStore);
+
+var keyValueStore = null; 
+Fabric_Client.newDefaultKeyValueStore({ 
+    path: config.hfc_store_path
+}).then(function(state_store) {
+   keyValueStore = state_store; 
+});
 
 var router = express.Router();
 
-// Now lets ask cfenv to parse the environment variable
-var appenv = cfenv.getAppEnv();
-
-// Within the application environment (appenv) there's a services object
-var services = appenv.services;
-
-// The services object is a map named by service so we extract the one for MongoDB
-var mongodb_services = services["compose-for-mongodb"];
-
-// This check ensures there is a services for MongoDB databases
-assert(!util.isUndefined(mongodb_services), "Must be bound to compose-for-mongodb services");
-
-// We now take the first bound MongoDB service and extract it's credentials object
-var credentials = mongodb_services[0].credentials;
-
-// Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
-// We convert that from a string into a Buffer entry in an array which we use when
-// connecting.
-var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
-
-// This is a global variable we'll use for handing the MongoDB client around
 var mongodb;
 
-//prepare the chainClient to interact with the blockchain
-chainClient.setup().catch(function(err){
-    console.log(err);
-});
-
 router.get("/command", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
+    mongoClient.connect(config.mongo_path, {
     }, function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
@@ -82,15 +59,8 @@ router.get("/fournisseurCommand", function(req, res){
 });
 
 router.get("/product", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("product").find({}).toArray(function(err, docs){
@@ -113,17 +83,19 @@ router.get("/product", function(req, res){
 
 router.post("/newProduct", function(req, res){
     console.log(req.body.descriptif);
-    chainClient.addProduct({ref: req.body.ref, description: req.body.descriptif, price: req.body.price, quantity: req.body.stock, critical: req.body.critical, user: req.session.user.address})
-    .then(function(resp){
-        mongoClient.connect(credentials.uri, {
-            mongos: {
-                ssl: true,
-                sslValidate: true,
-                sslCA: ca,
-                poolSize: 1,
-                reconnectTries: 1
-            }
-        }, function(err, db){
+    
+    const request = {
+        chaincodeId : config.chaincodeId,
+        fcn : "addProduct",
+        args : [req.body.ref, req.body.descriptif, req.body.price, req.body.stock, req.body.critical],
+        chainId : config.channel,
+        txId : null
+    }
+
+    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+    ).then(function(resp){
+        mongoClient.connect(config.mongo_path
+        , function(err, db){
             if(err == null){
                 mongodb = db.db("supply-chain");
                 mongodb.collection("product").insertOne({
@@ -151,15 +123,8 @@ router.post("/newProduct", function(req, res){
 });
 
 router.post("/modifyProduct", function(req, res){
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("product").updateOne(
@@ -188,18 +153,19 @@ router.post("/modifyProduct", function(req, res){
 });
 
 router.post("/addRule", function(req, res){
-    chainClient.setProvision({ref: req.body.product.ref, provision: req.body.provision, user: req.session.user.address})
-    .then(function(resp){
+    const request = {
+        chaincodeId : config.chaincodeId,
+        fcn : "setProvision",
+        args : [req.body.product.ref, req.body.provision],
+        chainId : config.channel,
+        txId : null
+    }
+    
+    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+    ).then(function(resp){
         console.log(resp);
-        mongoClient.connect(credentials.uri, {
-            mongos: {
-                ssl: true,
-                sslValidate: true,
-                sslCA: ca,
-                poolSize: 1,
-                reconnectTries: 1
-            }
-        }, function(err, db){
+        mongoClient.connect(config.mongo_path
+        , function(err, db){
             if(err == null){
                 mongodb = db.db("supply-chain");
                 mongodb.collection("product").updateOne(
@@ -229,18 +195,19 @@ router.post("/addRule", function(req, res){
 });
 
 router.post("/denyOrder", function(req, res){
-    chainClient.setState({state : "4", ref: req.body.id, user: req.session.user.address})
-    .then(function(resp){
+    const request = {
+        chaincodeId : config.chaincodeId,
+        fcn : "setState",
+        args : ["4", req.body.id],
+        chainId : config.channel,
+        txId : null
+    }
+    
+    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+    ).then(function(resp){
         console.log(resp);
-        mongoClient.connect(credentials.uri, {
-            mongos: {
-                ssl: true,
-                sslValidate: true,
-                sslCA: ca,
-                poolSize: 1,
-                reconnectTries: 1
-            }
-        }, function(err, db){
+        mongoClient.connect(config.mongo_path
+        , function(err, db){
             if(err == null){
                 mongodb = db.db("supply-chain");
                 mongodb.collection("command").updateOne(
@@ -277,18 +244,19 @@ router.post("/denyOrder", function(req, res){
 });
 
 router.post("/archivOrder", function(req, res){
-    chainClient.setState({state : "5", ref: req.body.id, user: req.session.user.address})
-    .then(function(resp){
+    const request = {
+        chaincodeId : config.chaincodeId,
+        fcn : "setState",
+        args : ["5", req.body.id],
+        chainId : config.channel,
+        txId : null
+    }
+    
+    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+    ).then(function(resp){
         console.log(resp);
-        mongoClient.connect(credentials.uri, {
-            mongos: {
-                ssl: true,
-                sslValidate: true,
-                sslCA: ca,
-                poolSize: 1,
-                reconnectTries: 1
-            }
-        }, function(err, db){
+        mongoClient.connect(config.mongo_path
+        , function(err, db){
             if(err == null){
                 mongodb = db.db("supply-chain");
                 mongodb.collection("command").updateOne(
@@ -328,15 +296,8 @@ router.get("/validOrder/:id", function(req, res){
     var i;
     var command;
     var product;
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("command").find({
@@ -349,8 +310,17 @@ router.get("/validOrder/:id", function(req, res){
                 else if(docs.length == 0) res.send(false);
                 else {
                     command = docs[0];
-                    chainClient.majProduct({user: req.session.user.address, refs: command.products.refs, quantities: command.products.quantities, ref: req.params.id})
-                    .then(function(resp){
+
+                    const request = {
+                        chaincodeId : config.chaincodeId,
+                        fcn : "majProduct",
+                        args : [command.products.refs, command.products.quantities, req.params.id],
+                        chainId : config.channel,
+                        txId : null
+                    }
+                    
+                    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+                    ).then(function(resp){
                         for(i=0; i<command.products.refs.length; i++){
                             findProductAndDecrease(req, res, db, mongodb, command, i, command.products.refs.length);
                         }
@@ -438,15 +408,8 @@ router.post("/askTransport", function(req, res){
     console.log(req.body.id);
     var transporteurID;
     var collis = {poids : req.body.poids, dimension : req.body.dimension}
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("user").find({
@@ -459,8 +422,16 @@ router.post("/askTransport", function(req, res){
                 }
                 else if(docs.length == 0) res.send("none");
                 else {
-                    chainClient.setTransport({user: req.session.user.address, colis: collis, ref: req.body.id, key: docs[0].address+"@"+docs[0].type})
-                    .then(function(resp){
+                    const request = {
+                        chaincodeId : config.chaincodeId,
+                        fcn : "setTransport",
+                        args : [JSON.stringify(collis), req.body.id, docs[0].address+"@"+docs[0].type],
+                        chainId : config.channel,
+                        txId : null
+                    }
+                    
+                    invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+                    ).then(function(resp){
                         console.log(resp);
                         transporteurID = docs[0]._id
                         console.log(transporteurID);

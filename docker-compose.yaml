@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+
+  supplychain:
+    image: "poc/supplychain:latest"
+    ports:
+      - "8080:8080"

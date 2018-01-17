@@ -5,6 +5,7 @@ vendor
 logs
 runtime.pid
 Procfile
+hfc-key-store
 
 
 

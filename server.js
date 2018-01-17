@@ -54,5 +54,4 @@ app.use(transporteurRouter);
 
 app.listen(port, function() {
   console.log('Node app is running on port', port);
-  require("cf-deployment-tracker-client").track();
 });

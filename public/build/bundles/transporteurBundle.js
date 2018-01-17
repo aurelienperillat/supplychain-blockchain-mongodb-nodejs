@@ -10330,7 +10330,7 @@ return jQuery;
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = {"url":"https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net","inactiveurl":"http://localhost:8080"}
+module.exports = {"url":"http://localhost:8080"}
 
 /***/ }),
 /* 2 */
@@ -10940,7 +10940,7 @@ __webpack_require__ (7);
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(9)(undefined);
+exports = module.exports = __webpack_require__(9)(false);
 // imports
 
 
@@ -11053,8 +11053,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js", function() {
-			var newContent = require("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"useFlexbox\":true,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\.bootstraprc\",\"bootstrapPath\":\"C:\\\\Users\\\\aperilla\\\\blockchain\\\\supplychain-blockchain-mongodb-nodejs\\\\node_modules\\\\bootstrap-sass\",\"bootstrapRelPath\":\"..\\\\bootstrap-sass\"}!./no-op.js");
+		module.hot.accept("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"/home/aurel/go/src/supplychain/.bootstraprc\",\"bootstrapPath\":\"/home/aurel/go/src/supplychain/node_modules/bootstrap-sass\",\"bootstrapRelPath\":\"../bootstrap-sass\"}!./no-op.js", function() {
+			var newContent = require("!!../css-loader/index.js!../resolve-url-loader/index.js!../sass-loader/lib/loader.js?sourceMap!./lib/bootstrap.styles.loader.js?{\"bootstrapVersion\":3,\"extractStyles\":false,\"styleLoaders\":[\"style-loader\",\"css-loader\",\"sass-loader\"],\"styles\":[\"normalize\",\"print\"],\"scripts\":[\"alert\",\"button\",\"modal\"],\"configFilePath\":\"/home/aurel/go/src/supplychain/.bootstraprc\",\"bootstrapPath\":\"/home/aurel/go/src/supplychain/node_modules/bootstrap-sass\",\"bootstrapRelPath\":\"../bootstrap-sass\"}!./no-op.js");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -11672,7 +11672,7 @@ modalMiddle = function() {
             "<p>Dimensions : "+command.collis.dimension+" m</p>"+
             "<p>Poids : "+command.collis.poids+" kg</p>"+
         "<h3>Information sur le transport :</h3>"+
-        "<p>Numéro de tracking : "+command.trackingID+" kg</p>"+
+        "<p>Numéro de tracking : "+command.trackingID+"</p>"+
         "<div class='row'>"+    
             "<button type='button' class='btn btn-success col-sm-offset-4 col-sm-4' id='validDelivery'>Valider livraison</button>"+
         "</div>"
@@ -11711,7 +11711,7 @@ modalRight = function() {
             "<p>Dimensions : "+command.collis.dimension+" m</p>"+
             "<p>Poids : "+command.collis.poids+" kg</p>"+
         "<h3>Information sur le transport :</h3>"+
-        "<p>Numéro de tracking : "+command.trackingID+" kg</p>"
+        "<p>Numéro de tracking : "+command.trackingID+"</p>"
     );
 
     $("#myModal").modal("show");

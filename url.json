@@ -1,4 +1,3 @@
 {
-    "url": "https://supplychain-blockchain-mongodb-nodejs.eu-gb.mybluemix.net",
-    "inactiveurl": "http://localhost:8080"
+    "url": "http://localhost:8080"
 }

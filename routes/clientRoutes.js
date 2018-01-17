@@ -1,51 +1,32 @@
 var express = require('express');
-var cfenv = require('cfenv');
 var mongoClient = require('mongodb').MongoClient;
-var chainClient = require('../src/blockchainClient.js');
-
-const util = require('util')
-const assert = require('assert');
 var URL = require("../url.json");
+
+var Fabric_Client = require('fabric-client');
+var config = require("../config.js");
+var queryHelper = require("../blockchain_helper/query.js");
+var invokeHelper = require("../blockchain_helper/invoke.js");
+
+var cryptoKeyStore = Fabric_Client.newCryptoKeyStore({path: config.hfc_store_path});
+
+var cryptoSuite = Fabric_Client.newCryptoSuite();
+cryptoSuite.setCryptoKeyStore(cryptoKeyStore);
+
+var keyValueStore = null; 
+Fabric_Client.newDefaultKeyValueStore({ 
+    path: config.hfc_store_path
+}).then(function(state_store) {
+   keyValueStore = state_store; 
+});
+
+var mongodb;
 
 var router = express.Router();
 
-// Now lets ask cfenv to parse the environment variable
-var appenv = cfenv.getAppEnv();
-
-// Within the application environment (appenv) there's a services object
-var services = appenv.services;
-
-// The services object is a map named by service so we extract the one for MongoDB
-var mongodb_services = services["compose-for-mongodb"];
-
-// This check ensures there is a services for MongoDB databases
-assert(!util.isUndefined(mongodb_services), "Must be bound to compose-for-mongodb services");
-
-// We now take the first bound MongoDB service and extract it's credentials object
-var credentials = mongodb_services[0].credentials;
-
-// Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
-// We convert that from a string into a Buffer entry in an array which we use when
-// connecting.
-var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
-
-// This is a global variable we'll use for handing the MongoDB client around
-var mongodb;
-
-//prepare the chainClient to interact with the blockchain
-chainClient.setup();
-
 router.get("/command-client", function(req, res){
     console.log(req.session.user.address);
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("command").find({
@@ -120,15 +101,8 @@ router.post("/panier", function(req, res){
         descriptifs.push(panier[i].product.description);
     }
 
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
-    }, function(err, db){
+    mongoClient.connect(config.mongo_path
+    , function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
             mongodb.collection("command").insertOne({
@@ -170,8 +144,16 @@ router.post("/panier", function(req, res){
                             res.send("none"); 
                         } 
                         else {
-                            chainClient.addOrder({user: req.session.user, products: products, quantities: quantities, totalprice: panierPrice.toString(), ref: docs[0]._id.toString()})
-                            .then(function(resp){
+                            const request = {
+                                chaincodeId : config.chaincodeId,
+                                fcn : "addOrder",
+                                args : [req.session.user.address + "@" + req.session.user.password, JSON.stringify(products), JSON.stringify(quantities), panierPrice.toString(), docs[0]._id.toString()],
+                                chainId : config.channel,
+                                txId : null
+                            }
+                        
+                            invokeHelper.invoke(keyValueStore, cryptoSuite, req.session.user.address, request
+                            ).then(function(resp){
                               console.log(resp);  
                               req.session.panier = [];
                               req.session.panierPrice = 0;

@@ -1,42 +1,70 @@
 var express = require('express');
-var cfenv = require('cfenv');
 var sha256 = require('sha256');
 var mongoClient = require('mongodb').MongoClient;
-var chainClient = require('../src/blockchainClient.js');
-
-const util = require('util')
-const assert = require('assert');
+var Fabric_Client = require('fabric-client');
+var Fabric_CA_Client = require('fabric-ca-client');
+var registerHelper = require("../blockchain_helper/register.js");
+var invokeHelper = require("../blockchain_helper/invoke.js");
+var config = require("../config.js");
 var URL = require("../url.json");
 
-var router = express.Router();
+var cryptoKeyStore = Fabric_Client.newCryptoKeyStore({path: config.hfc_store_path});
 
-// Now lets ask cfenv to parse the environment variable
-var appenv = cfenv.getAppEnv();
+var cryptoSuite = Fabric_Client.newCryptoSuite();
+cryptoSuite.setCryptoKeyStore(cryptoKeyStore);
 
-// Within the application environment (appenv) there's a services object
-var services = appenv.services;
+var keyValueStore = null;
 
-// The services object is a map named by service so we extract the one for MongoDB
-var mongodb_services = services["compose-for-mongodb"];
+var fabric_ca_client  = new Fabric_CA_Client(config.ca.url, config.ca.tlsOptions , config.ca.name, cryptoSuite);
 
-// This check ensures there is a services for MongoDB databases
-assert(!util.isUndefined(mongodb_services), "Must be bound to compose-for-mongodb services");
+var fabric_client = new Fabric_Client();
 
-// We now take the first bound MongoDB service and extract it's credentials object
-var credentials = mongodb_services[0].credentials;
+var admin_user = null;
 
-// Within the credentials, an entry ca_certificate_base64 contains the SSL pinning key
-// We convert that from a string into a Buffer entry in an array which we use when
-// connecting.
-var ca = [new Buffer(credentials.ca_certificate_base64, 'base64')];
+var mongodb = null;
 
-// This is a global variable we'll use for handing the MongoDB client around
-var mongodb;
-
-//prepare the chainClient to interact with the blockchain
-chainClient.setup().catch(function(err){
-    console.log(err);
+Fabric_Client.newDefaultKeyValueStore({ 
+    path: config.hfc_store_path
+}).then(function(state_store) {
+    keyValueStore = state_store;
+    fabric_client.setStateStore(state_store); 
+    fabric_client.setCryptoSuite(cryptoSuite);
+    return fabric_client.getUserContext(config.ca.admin.enrollmentID, true);
+}).then(function(user_from_store) {
+    if (user_from_store && user_from_store.isEnrolled()) {
+        console.log('Successfully loaded admin from persistence');
+        admin_user = user_from_store;
+        return null;
+    } 
+    else {
+        return fabric_ca_client.enroll({
+                enrollmentID: config.ca.admin.enrollmentID,
+                enrollmentSecret: config.ca.admin.enrollmentSecret
+        }).then(function(enrollment) {
+            console.log('Successfully enrolled admin user "admin"');
+            return fabric_client.createUser({
+                username: config.ca.admin.enrollmentID,
+                mspid: config.ca.admin.mspid,
+                cryptoContent: { 
+                    privateKeyPEM: enrollment.key.toBytes(),
+                    signedCertPEM: enrollment.certificate
+                }
+            });
+        }).then(function(user) {
+          admin_user = user;
+          return fabric_client.setUserContext(admin_user);
+        }).catch(function(err) {
+          console.log('Failed to enroll and persist admin. Error: ' + err.stack ? err.stack : err);
+          throw new Error('Failed to enroll admin');
+        });
+    }
+}).then(function() {
+    console.log('Assigned the admin user to the fabric client ::' + admin_user.toString());
+}).catch(function(err) {
+    console.error('Failed to enroll admin: ' + err);
 });
+
+var router = express.Router();
 
 router.get("/", function(req, res){
     res.render('login.ejs', {url : URL.url});    
@@ -50,14 +78,7 @@ router.post("/login", function(req, res){
     console.log("address: " + addressVal);
     console.log("password: " + passwordVal);
     
-    mongoClient.connect(credentials.uri, {
-        mongos: {
-            ssl: true,
-            sslValidate: true,
-            sslCA: ca,
-            poolSize: 1,
-            reconnectTries: 1
-        }
+    mongoClient.connect(config.mongo_path, {
     }, function(err, db){
         if(err == null){
             mongodb = db.db("supply-chain");
@@ -123,24 +144,20 @@ router.post("/signin", function(req, res){
     console.log("deliveryadress" + deliveryAddressVal);
     console.log("company: " + companyVal);
 
-    chainClient.signin({user: addressVal, affiliation: typeVal})
-    .then(function(resp){
-        console.log("Succesfullly register and enroll user to blockchain :");
-        console.log(resp.body);
-        var hash = sha256(typeVal+addressVal+nameVal+lastNameVal+passwordVal+deliveryAddressVal+companyVal);
-        return chainClient.addUser({user: addressVal, affiliation: typeVal, hash: hash});
-    }).then(function(resp){
+    registerHelper.register(keyValueStore, cryptoSuite, addressVal, admin_user
+    ).then(function(result) {
         console.log("Succesfully add user to blockchain state")
-        console.log(resp.body);
-
-        mongoClient.connect(credentials.uri, {
-            mongos: {
-                ssl: true,
-                sslValidate: true,
-                sslCA: ca,
-                poolSize: 1,
-                reconnectTries: 1
-            }
+        const request = {
+            chaincodeId : config.chaincodeId,
+            fcn : "addUser",
+            args : [addressVal, passwordVal, sha256(addressVal + "@" + passwordVal)],
+            chainId : config.channel,
+            txId : null
+        }
+    
+        return invokeHelper.invoke(keyValueStore, cryptoSuite, addressVal, request);   
+    }).then(function(resp){
+        mongoClient.connect(config.mongo_path, {
         }, function(err, db){
             if(err == null){
                 mongodb = db.db("supply-chain");
